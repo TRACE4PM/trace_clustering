@@ -8,7 +8,7 @@ from sklearn.metrics import davies_bouldin_score
 import numpy as np
 import warnings
 
-file_path = "/services/clustering/test/result_res10k.csv"
+file_path = "/home/ania/Desktop/trace_clustering/services/clustering/test/result_res10k.csv"
 
 
 def clusetering_algo(file_path, clustering_methode, params):
@@ -22,29 +22,24 @@ def clusetering_algo(file_path, clustering_methode, params):
     traces = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
 
     distance_matrix = levenshtein(traces)
-    print("Distance matrix")
-    print(distance_matrix)
 
     if clustering_methode =="DBSCAN":
         clusters, cluster_assignement = DBScan_clust(distance_matrix, params)
 
     elif clustering_methode == "Agglomerative":
         clusters, cluster_assignement = Agglomerative_clust(distance_matrix, params)
+        db_score = davies_bouldin_score(distance_matrix, cluster_assignement)
 
-    print("number of clusters after clustering :", len(np.unique(cluster_assignement)))
-    # Evaluating clustering results
     silhouette = silhouette_score(distance_matrix, cluster_assignement)
-    print("silhouette score :", silhouette)
-
-    db_score = davies_bouldin_score(distance_matrix, cluster_assignement)
-    print("davies bouldin score : ", db_score)
 
     save_clusters(df, cluster_assignement, traces)
+
+    return silhouette, db_score
 
 
 if __name__ == "__main__":
     # clustering_algorithm = input("Enter clustering algorithm (DBSCAN/Agglomerative): ").strip()
-    clustering_algorithm = "DBSCAN"
+    clustering_algorithm = "Agglomerative"
     if clustering_algorithm not in ['DBSCAN', 'Agglomerative']:
         print("Invalid clustering algorithm.")
     else:
@@ -55,4 +50,4 @@ if __name__ == "__main__":
         elif clustering_algorithm == 'Agglomerative':
             algorithm_params['nb'] = int(input("Enter number of clusters for Agglomerative: "))
 
-        clusetering_algo(clustering_algorithm, algorithm_params)
+        print(clusetering_algo(file_path,clustering_algorithm, algorithm_params))

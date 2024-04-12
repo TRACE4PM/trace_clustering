@@ -11,8 +11,6 @@ def save_clusters(log_df,clusters, traces):
         client_id = traces[clusters == cluster_id]['client_id']
         cluster_info_df = pd.DataFrame({'client_id': client_id, 'traces': cluster_traces})
         clusters_to_logs(log_df,cluster_id, cluster_info_df)
-        print("clusters saved in log files")
-
 
 def clusters_to_logs(original_logs_df, cluster_id, cluster_info_df):
 
