@@ -5,9 +5,11 @@ description = "Applying clustering algorithms on log file"
 authors = ["Ania DAHACHE <ania.dahache@univ-lr.fr>"]
 readme = "README.md"
 
-[tool.poetry.dependencies]
 
+[tool.poetry.dependencies]
 python = "^3.11"
+
+[tool.poetry.group.dev.dependencies]
 pandas = "^2.2.2"
 scikit-learn = "^1.4"
 numpy = "^1.26.4"

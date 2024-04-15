@@ -5,10 +5,11 @@ from .utils import save_clusters
 from sklearn.metrics import davies_bouldin_score
 import warnings
 import pandas as pd
-from distance.calc_dist import levenshtein
+from ..distance.calc_dist import levenshtein
+
 
 def DBScan_clust(distance_matrix, params):
-    cluster = DBSCAN(eps=params['eps'], min_samples=params['samples'] , metric='precomputed')
+    cluster = DBSCAN(eps=params['eps'], min_samples=params['samples'], metric='precomputed')
     cluster_assignments = cluster.fit_predict(distance_matrix)
     return cluster, cluster_assignments
 
@@ -20,7 +21,6 @@ def Agglomerative_clust(distance_matrix, params):
 
 
 def clustering_algo(file_path, clustering_methode, params):
-
     warnings.filterwarnings('ignore')
 
     df = pd.read_csv(file_path, sep=";")
@@ -30,16 +30,18 @@ def clustering_algo(file_path, clustering_methode, params):
     traces = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
 
     distance_matrix = levenshtein(traces)
+    result = {}
 
-    if clustering_methode =="DBSCAN":
+    if clustering_methode == "DBSCAN":
         clusters, cluster_assignement = DBScan_clust(distance_matrix, params)
-        silhouette = silhouette_score(distance_matrix, cluster_assignement)
-        return silhouette
 
     elif clustering_methode == "Agglomerative":
         clusters, cluster_assignement = Agglomerative_clust(distance_matrix, params)
         db_score = davies_bouldin_score(distance_matrix, cluster_assignement)
-        silhouette = silhouette_score(distance_matrix, cluster_assignement)
-        return silhouette, db_score
+        result["Davies bouldin"] = db_score
+
+    silhouette = silhouette_score(distance_matrix, cluster_assignement)
+    result["Silhouette"] = silhouette
 
     save_clusters(df, cluster_assignement, traces)
+    return result
