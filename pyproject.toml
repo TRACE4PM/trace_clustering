@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "clustering"
+version = "0.1.0"
+description = "Applying clustering algorithms on log file"
+authors = ["Ania DAHACHE <ania.dahache@univ-lr.fr>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+
+python = "^3.11"
+pandas = "^2.2.2"
+scikit-learn = "^1.4"
+numpy = "^1.26.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
