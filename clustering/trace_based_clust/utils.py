@@ -15,7 +15,7 @@ def save_clusters(log_df,clusters, traces):
 def clusters_to_logs(original_logs_df, cluster_id, cluster_info_df):
 
     # Iterate over cluster_info_df and create log files for each cluster
-    file_path = f'clustering/logs/cluster_log_{cluster_id}.csv'
+    file_path = f'src/outputs/logs/cluster_log_{cluster_id}.csv'
 
     with open(file_path, 'w') as file:
         writer = csv.writer(file, delimiter=";")

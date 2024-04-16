@@ -9,7 +9,6 @@ from .trace_based_clust.utils import save_clusters
 
 def clustering_algo(file_path, clustering_methode, params):
     warnings.filterwarnings('ignore')
-
     df = pd.read_csv(file_path, sep=";")
 
     df['timestamp'] = pd.to_datetime(df['timestamp'])
