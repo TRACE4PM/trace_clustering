@@ -1,8 +1,8 @@
-import Levenshtein
+# import Levenshtein
 from scipy.spatial.distance import jaccard
 from .utils import Normal_lev
 import numpy as np
-import Levenshtein
+from Levenshtein import distance as lev
 
 # calcul distance between vectors => vector based clust
 def jaccard_distance(feature1, feature2):
@@ -23,7 +23,7 @@ def levenshtein(traces):
             while(j < i):
                 string1 = traces.iloc[i]['trace']
                 string2 = traces.iloc[j]['trace']
-                lev_dist = Levenshtein.distance(string1,string2)
+                lev_dist = lev(string1,string2)
                 dist_norm = Normal_lev(lev_dist, string1, string2)
                 distance_matrix[i][j] = distance_matrix[j][i] = dist_norm
                 j = j + 1
