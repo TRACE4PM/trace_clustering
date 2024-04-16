@@ -1,5 +1,4 @@
-from clustering.trace_based_clust.algorithm import clustering_algo
-
+from clustering.main import clustering_algo
 
 file_path = "/home/ania/Desktop/trace_clustering/services/clustering/test/result_res10k.csv"
 
