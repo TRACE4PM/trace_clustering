@@ -15,5 +15,6 @@ if __name__ == "__main__":
             algorithm_params['samples'] = int(input("Enter min_samples value for DBSCAN: "))
         elif clustering_algorithm == 'Agglomerative':
             algorithm_params['nb'] = int(input("Enter number of clusters for Agglomerative: "))
+            algorithm_params['linkage'] = str(input("Enter linkage for Agglomerative: "))
 
         print(clustering_algo(file_path, clustering_algorithm, algorithm_params))

@@ -5,12 +5,14 @@ import numpy as np
 from Levenshtein import distance as lev
 
 # calcul distance between vectors => vector based clust
+
 def jaccard_distance(feature1, feature2):
     keys = sorted(set(feature1.keys()) | set(feature2.keys()))
     vector1 = np.array([feature1.get(key, 0) for key in keys], dtype=bool)
     vector2 = np.array([feature2.get(key, 0) for key in keys], dtype=bool)
-    return jaccard(vector1, vector2)
+    distance = jaccard(vector1, vector2)
 
+    return round(distance,3)
 
 def levenshtein(traces):
     matrix_size = len(traces)
