@@ -9,7 +9,7 @@ from .trace_based_clust.utils import save_clusters
 
 def clustering_algo(file_path, clustering_methode, params):
     warnings.filterwarnings('ignore')
-    df = pd.read_csv(file_path, sep=",")
+    df = pd.read_csv(file_path, sep=";")
 
     df['timestamp'] = pd.to_datetime(df['timestamp'])
 
@@ -18,10 +18,10 @@ def clustering_algo(file_path, clustering_methode, params):
     distance_matrix = levenshtein(traces)
     result = {}
 
-    if clustering_methode == "DBSCAN":
+    if clustering_methode.lower() == "dbscan":
         clusters, cluster_assignement = dbscan_clust(distance_matrix, params)
 
-    elif clustering_methode == "Agglomerative":
+    elif clustering_methode.lower() == "agglomerative":
         clusters, cluster_assignement = agglomerative_clust(distance_matrix, params)
         db_score = davies_bouldin_score(distance_matrix, cluster_assignement)
         result["Davies bouldin"] = db_score
