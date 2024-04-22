@@ -17,4 +17,5 @@ if __name__ == "__main__":
         elif clustering_algorithm == 'agglomerative':
             algorithm_params = ClusteringParams(n_clusters=2, linkage='single')
 
+        print(algorithm_params.n_clusters)
         print(clustering_algo(file_path, clustering_algorithm, algorithm_params))

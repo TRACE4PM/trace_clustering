@@ -15,10 +15,10 @@ def save_clusters(log_df,clusters, traces):
 def clusters_to_logs(original_logs_df, cluster_id, cluster_info_df):
 
     # Iterate over cluster_info_df and create log files for each cluster
-    file_path = f'clustering/outputs/logs/cluster_log_{cluster_id}.csv'
+    file_path = f'temp/logs/cluster_log_{cluster_id}.csv'
 
     with open(file_path, 'w') as file:
-        writer = csv.writer(file, delimiter=";")
+        writer = csv.writer(file, delimiter=",")
         writer.writerow(['client_id', 'action', 'timestamp'])
 
         for index, row in cluster_info_df.iterrows():
@@ -35,9 +35,9 @@ def clusters_to_logs(original_logs_df, cluster_id, cluster_info_df):
             filtered_logs_df['timestamp'] = pd.to_datetime(filtered_logs_df['timestamp'], format ='%d/%m/%y, %H:%M', utc=True)
 
             # Convert the timezone to the appropriate timezone (e.g., 'Europe/Paris')
-            filtered_logs_df['timestamp']  = filtered_logs_df['timestamp'].dt.tz_convert('Europe/Paris')
-
-            filtered_logs_df['timestamp'] =  filtered_logs_df['timestamp'].dt.strftime('%d/%m/%y, %H:%M')
+            # filtered_logs_df['timestamp'] = filtered_logs_df['timestamp'].dt.tz_convert('Europe/Paris')
+            #
+            # filtered_logs_df['timestamp'] = filtered_logs_df['timestamp'].dt.strftime('%d/%m/%y, %H:%M')
             filtered_logs_df = pd.concat([filtered_logs_df, cluster_logs_df[cluster_logs_df['action'].isin(traces)]],
                                          ignore_index=True)
 
