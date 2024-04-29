@@ -1,9 +1,9 @@
-from clustering.main import vector_based_clustering
+from clustering.main import vector_based_clustering, feature_based_clustering
 from clustering.models.cluster_params import ClusteringParams
 from clustering.distance.utils import number_traces
 
 file_path = "/home/ania/Desktop/trace_clustering/services/clustering/test/result_res10k.csv"
-
+# file_path = "/home/ania/Desktop/trace_clustering/services/clustering/test/TraceTestFile.csv"
 
 if __name__ == "__main__":
 
@@ -42,3 +42,4 @@ if __name__ == "__main__":
         print(vector_based_clustering(file_path, vector_rep, clustering_algorithm, algorithm_params))
 
         number_traces("/home/ania/Desktop/trace_clustering/services/clustering/temp/logs")
+

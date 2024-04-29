@@ -79,6 +79,33 @@ docs = ["ipython", "matplotlib", "numpydoc", "sphinx"]
 tests = ["pytest", "pytest-cov", "pytest-xdist"]
 
 [[package]]
+name = "docopt"
+version = "0.6.2"
+description = "Pythonic argument parser, that will make you smile"
+optional = false
+python-versions = "*"
+files = [
+    {file = "docopt-0.6.2.tar.gz", hash = "sha256:49b3a825280bd66b3aa83585ef59c4a8c82f2c8a522dbe754a8bc8d08c85c491"},
+]
+
+[[package]]
+name = "extratools"
+version = "0.8.2.1"
+description = "145+ extra higher-level functional tools beyond standard and third-Party libraries."
+optional = false
+python-versions = ">= 3"
+files = [
+    {file = "extratools-0.8.2.1.tar.gz", hash = "sha256:d1410f4ffb59a508a3ec4b9f801eb378c6ce051f70360001536824542d6deb7a"},
+]
+
+[package.dependencies]
+sortedcontainers = ">=1.5.10"
+toolz = ">=0.9.0"
+
+[package.extras]
+all = ["RegexOrder (>=0.2)", "TagStats (>=0.1.2)", "sh (>=1.12.13)"]
+
+[[package]]
 name = "fonttools"
 version = "4.51.0"
 description = "Tools to manipulate font files"
@@ -551,6 +578,20 @@ typing = ["typing-extensions"]
 xmp = ["defusedxml"]
 
 [[package]]
+name = "prefixspan"
+version = "0.5.2"
+description = "PrefixSpan, BIDE, and FEAT in Python 3"
+optional = false
+python-versions = ">= 3"
+files = [
+    {file = "prefixspan-0.5.2.tar.gz", hash = "sha256:8fbd2f94b3a7f4399d04f9bd6aa214b830fb7828799c472cd43dda10b03f671c"},
+]
+
+[package.dependencies]
+docopt = ">=0.6.2"
+extratools = ">=0.8.1"
+
+[[package]]
 name = "pydantic"
 version = "1.10.7"
 description = "Data validation and settings management using python type hints"
@@ -737,6 +778,17 @@ files = [
 ]
 
 [[package]]
+name = "sortedcontainers"
+version = "2.4.0"
+description = "Sorted Containers -- Sorted List, Sorted Dict, Sorted Set"
+optional = false
+python-versions = "*"
+files = [
+    {file = "sortedcontainers-2.4.0-py2.py3-none-any.whl", hash = "sha256:a163dcaede0f1c021485e957a39245190e74249897e2ae4b2aa38595db237ee0"},
+    {file = "sortedcontainers-2.4.0.tar.gz", hash = "sha256:25caa5a06cc30b6b83d11423433f65d1f9d76c4c6a0c90e3379eaa43b9bfdb88"},
+]
+
+[[package]]
 name = "threadpoolctl"
 version = "3.4.0"
 description = "threadpoolctl"
@@ -745,6 +797,17 @@ python-versions = ">=3.8"
 files = [
     {file = "threadpoolctl-3.4.0-py3-none-any.whl", hash = "sha256:8f4c689a65b23e5ed825c8436a92b818aac005e0f3715f6a1664d7c7ee29d262"},
     {file = "threadpoolctl-3.4.0.tar.gz", hash = "sha256:f11b491a03661d6dd7ef692dd422ab34185d982466c49c8f98c8f716b5c93196"},
+]
+
+[[package]]
+name = "toolz"
+version = "0.12.1"
+description = "List processing tools and functional utilities"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "toolz-0.12.1-py3-none-any.whl", hash = "sha256:d22731364c07d72eea0a0ad45bafb2c2937ab6fd38a3507bf55eae8744aa7d85"},
+    {file = "toolz-0.12.1.tar.gz", hash = "sha256:ecca342664893f177a13dac0e6b41cbd8ac25a358e5f215316d43e2100224f4d"},
 ]
 
 [[package]]
@@ -772,4 +835,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "94240140e8481ab4ff4943d6fff637065867d95ab104d95b036388c71f68c639"
+content-hash = "1b0d74af7390d074101b32ab02e517a6ffd5b1f8c9fa51d471acc76564db9f05"
