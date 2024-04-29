@@ -26,6 +26,7 @@ def clustering(clustering_method, distance_matrix, params):
 
 
 def distanceMeasures(distance, vectors, params):
+    distance_matrix = []
     if distance == "hamming":
         distance_matrix = hamming_distance(vectors)
     elif params.distance == "jaccard":
@@ -37,6 +38,7 @@ def distanceMeasures(distance, vectors, params):
 
 
 def vectorRepresentation(vector_representation, traces):
+    vectors = []
     if vector_representation == "binary representation":
         vectors = getBinaryRep(traces, "client_id", "trace")
     elif vector_representation == "frequency representation":
