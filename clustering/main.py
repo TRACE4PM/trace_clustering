@@ -20,21 +20,23 @@ def trace_based_clustering(file_path, clustering_methode, params):
     traces = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
 
     distance_matrix = levenshtein(traces)
+    print("dist matrix", distance_matrix)
     result = {}
 
     if clustering_methode.lower() == "dbscan":
         clusters, cluster_assignement = dbscan_clust(distance_matrix, params)
-
     elif clustering_methode.lower() == "agglomerative":
         clusters, cluster_assignement = agglomerative_clust(distance_matrix, params)
-        db_score = davies_bouldin_score(distance_matrix, cluster_assignement)
-        result["Davies bouldin"] = db_score
+
+    print("clusters :",  clusters, cluster_assignement )
+    db_score = davies_bouldin_score(distance_matrix, cluster_assignement)
+    result["Davies bouldin"] = db_score
 
     silhouette = silhouette_score(distance_matrix, cluster_assignement)
     result["Silhouette"] = silhouette
 
     result["Silhouette of each cluster"] = silhouette_clusters(distance_matrix, cluster_assignement)
-
+    print(result)
     save_clusters(df, cluster_assignement, traces)
     return result
 
