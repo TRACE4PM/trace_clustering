@@ -1,6 +1,22 @@
+from sklearn.metrics import silhouette_samples
 import numpy as np
 import csv
 import pandas as pd
+
+
+def silhouette_clusters(distance_matrix, cluster_assignement):
+    silhouette_vals = silhouette_samples(distance_matrix, cluster_assignement)
+
+    # Calculate the silhouette score for each cluster
+    cluster_silhouette_scores = []
+    unique_labels = set(cluster_assignement)
+    for label in unique_labels:
+        cluster_mask = (cluster_assignement == label)
+        cluster_silhouette= silhouette_vals[cluster_mask].mean()
+        cluster_silhouette_scores.append(cluster_silhouette)
+
+    return  cluster_silhouette_scores
+
 
 
 def save_clusters(log_df,clusters, traces):
@@ -18,7 +34,7 @@ def clusters_to_logs(original_logs_df, cluster_id, cluster_info_df):
     file_path = f'temp/logs/cluster_log_{cluster_id}.csv'
 
     with open(file_path, 'w') as file:
-        writer = csv.writer(file, delimiter=",")
+        writer = csv.writer(file, delimiter=";")
         writer.writerow(['client_id', 'action', 'timestamp'])
 
         for index, row in cluster_info_df.iterrows():
@@ -42,4 +58,6 @@ def clusters_to_logs(original_logs_df, cluster_id, cluster_info_df):
                                          ignore_index=True)
 
             # Write the cluster logs to a CSV file
-            filtered_logs_df.to_csv(file, sep=',', index=False,header=False, mode='a')
+            filtered_logs_df.to_csv(file, sep=';', index=False,header=False, mode='a')
+
+

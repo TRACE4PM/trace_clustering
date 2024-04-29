@@ -13,3 +13,8 @@ def agglomerative_clust(distance_matrix, params):
     cluster_assignments = cluster.fit_predict(distance_matrix)
     return cluster, cluster_assignments
 
+def kmeans_clust(best_k, distance_matrix):
+    kmeans = KMeans(n_clusters=best_k)
+    X = distance_matrix.reshape(-1, 1)
+    clusters = kmeans.fit_predict(X)
+    return clusters
