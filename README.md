@@ -28,16 +28,16 @@ This approach clusters traces based on their similarity using a distance matrix 
 
 `def trace_based_clustering(file_path, clustering_method, params):`
 ### Parameters
-**file_path**: Path to the input CSV file containing the traces data.
-**clustering_method**: The clustering method to be used. Supported methods are:
-"DBSCAN": Density-Based Spatial Clustering of Applications with Noise.
-"Agglomerative": Agglomerative hierarchical clustering.
-**params**: Additional parameters needed for clustering. For example, epsilon and min_samples for DBSCAN or the number of clusters and Linkage criteria for Agglomerative clustering.
+- **file_path**: Path to the input CSV file containing the traces data.
+- **clustering_method**: The clustering method to be used. Supported methods are:
+  - "DBSCAN": Density-Based Spatial Clustering of Applications with Noise.
+  - "Agglomerative": Agglomerative hierarchical clustering.
+- **params**: Additional parameters needed for clustering. For example, epsilon and min_samples for DBSCAN or the number of clusters and Linkage criteria for Agglomerative clustering.
 ### Returns
 A dictionary containing clustering evaluation metrics:
-**Davies bouldin**: Davies-Bouldin score.
-**Silhouette**: Silhouette score.
-**Silhouette of each cluster**: Silhouette scores for individual clusters.
+- **Davies bouldin**: Davies-Bouldin score.
+- **Silhouette**: Silhouette score.
+- **Silhouette of each cluster**: Silhouette scores for each generated cluster.
 
 ## Vector-Based Clustering
 This approach first represents traces as vectors using various encoding techniques such as `Binary Representation`, `Frequency based Representation`, or `Relative Frequency`. 
@@ -46,15 +46,15 @@ Finally, it applies clustering using DBSCAN or Agglomerative clustering.
 
 `def vector_based_clustering(file_path, vector_representation, clustering_method, params) `
 ### Parameters
-**file_path**: Path to the input CSV file containing the traces data.
-**vector_representation**: use different techniques to represent the traces as vectors:
-"binary based": Binary representation.
-"frequency based": Frequency-based representation.
-"relative frequency": Relative frequency representation.
-**clustering_method**: The clustering method to be used. Supported methods are:
-"DBSCAN": Density-Based Spatial Clustering of Applications with Noise.
-"Agglomerative": Agglomerative hierarchical clustering.
-**params**: Additional parameters needed for clustering and vector representation. For example, distance metric for vectors and clustering parameters.
+- **file_path**: Path to the input CSV file containing the traces data.
+- **vector_representation**: use different techniques to represent the traces as vectors:
+  - "binary based": Binary representation.
+  - "frequency based": Frequency-based representation.
+  - "relative frequency": Relative frequency representation.
+- **clustering_method**: The clustering method to be used. Supported methods are:
+  - "DBSCAN": Density-Based Spatial Clustering of Applications with Noise.
+  - "Agglomerative": Agglomerative hierarchical clustering.
+- **params**: Additional parameters needed for clustering and vector representation. For example, distance metric for vectors and clustering parameters.
 ### Returns 
 A dictionary containing clustering evaluation metrics similar to the Trace-Based Clustering approach.
 
