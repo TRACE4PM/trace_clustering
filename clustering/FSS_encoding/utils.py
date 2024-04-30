@@ -40,3 +40,4 @@ def contains_pattern(sequence, pattern):
                 return 1
 
     return 0
+

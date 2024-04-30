@@ -1,13 +1,6 @@
 # clustering
 
 
-
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
 ## Add your files
 
 ```
@@ -17,29 +10,56 @@ git branch -M main
 git push -uf origin main
 ```
 
-## Integrate with your tools
+## Installation and Configuration
 
-- [ ] [Set up project integrations](https://gitlab.univ-lr.fr/trace_clustering/services/clustering/-/settings/integrations)
+- Pour utiliser le service clustering dans le projet, il faut juste l'installer comme un module python. Dans notre cas, avec poetry, il suffit d'exécuter les différentes étapes suivantes :
+    - Inclure le lien du dépôt du service dans le fichier de configuration (pyproject.toml) du projet dans la section [tool.poetry.dependencies] de la manière suivante (discover = {git = "https://gitlab.univ-lr.fr/trace_clustering/services/clustering.git"})
+    - Installer le service comme un module avec la commande suivante (poetry add discover)
+    - Importer les fonctions du service comme on importe n'importe quel module python par exemple (from clustering.main import trace_based_clustering) et importer l'approche de clustering que vous voulez utiliser
 
-## Collaborate with your team
+# Trace Clustering microservice 
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+This microservice implements two approaches for trace clustering: 
+`Trace-Based Clustering` and `Vector-Based Clustering`. The service is designed to cluster sequences of actions (traces) performed by the users, extracted from log files. 
+Below are the details for each approach:
 
-## Test and Deploy
+## Trace-Based Clustering 
+This approach clusters traces based on their similarity using a distance matrix computed with the Levenshtein distance metric.
 
-Use the built-in continuous integration in GitLab.
+`def trace_based_clustering(file_path, clustering_method, params):`
+### Parameters
+**file_path**: Path to the input CSV file containing the traces data.
+**clustering_method**: The clustering method to be used. Supported methods are:
+"DBSCAN": Density-Based Spatial Clustering of Applications with Noise.
+"Agglomerative": Agglomerative hierarchical clustering.
+**params**: Additional parameters needed for clustering. For example, epsilon and min_samples for DBSCAN or the number of clusters and Linkage criteria for Agglomerative clustering.
+### Returns
+A dictionary containing clustering evaluation metrics:
+**Davies bouldin**: Davies-Bouldin score.
+**Silhouette**: Silhouette score.
+**Silhouette of each cluster**: Silhouette scores for individual clusters.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+## Vector-Based Clustering
+This approach first represents traces as vectors using various encoding techniques such as `Binary Representation`, `Frequency based Representation`, or `Relative Frequency`. 
+Then, it computes a distance matrix based on the chosen distance measure (e.g., cosine, Jaccard, or Hamming distance). 
+Finally, it applies clustering using DBSCAN or Agglomerative clustering.
 
-***
+`def vector_based_clustering(file_path, vector_representation, clustering_method, params) `
+### Parameters
+**file_path**: Path to the input CSV file containing the traces data.
+**vector_representation**: use different techniques to represent the traces as vectors:
+"binary based": Binary representation.
+"frequency based": Frequency-based representation.
+"relative frequency": Relative frequency representation.
+**clustering_method**: The clustering method to be used. Supported methods are:
+"DBSCAN": Density-Based Spatial Clustering of Applications with Noise.
+"Agglomerative": Agglomerative hierarchical clustering.
+**params**: Additional parameters needed for clustering and vector representation. For example, distance metric for vectors and clustering parameters.
+### Returns 
+A dictionary containing clustering evaluation metrics similar to the Trace-Based Clustering approach.
+
+
+
 
 # Editing this README
 

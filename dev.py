@@ -42,4 +42,10 @@ if __name__ == "__main__":
         print(vector_based_clustering(file_path, vector_rep, clustering_algorithm, algorithm_params))
 
         number_traces("/home/ania/Desktop/trace_clustering/services/clustering/temp/logs")
+
+    # ****************** feature based test *****************
+
+
+    # result = feature_based_clustering(file_path)
     #
+    # print("replaced traces :", result)
