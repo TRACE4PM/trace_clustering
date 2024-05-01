@@ -32,7 +32,9 @@ This approach clusters traces based on their similarity using a distance matrix 
 - **clustering_method**: The clustering method to be used. Supported methods are:
   - "DBSCAN": Density-Based Spatial Clustering of Applications with Noise.
   - "Agglomerative": Agglomerative hierarchical clustering.
-- **params**: Additional parameters needed for clustering. For example, epsilon and min_samples for DBSCAN or the number of clusters and Linkage criteria for Agglomerative clustering.
+- **params**: Additional parameters needed for clustering.
+  - `eps` and `min_samples` : epsilon and min_samples for DBSCAN
+  - 'n_clusters' and 'linkage' : number of clusters and Linkage criteria for Agglomerative clustering.
 ### Returns
 A dictionary containing clustering evaluation metrics:
 - **Davies bouldin**: Davies-Bouldin score.
