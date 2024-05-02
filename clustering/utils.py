@@ -1,7 +1,8 @@
-from sklearn.metrics import silhouette_samples
-import numpy as np
 import csv
+import numpy as np
+import os
 import pandas as pd
+from sklearn.metrics import silhouette_samples
 
 
 def silhouette_clusters(distance_matrix, cluster_assignement):
@@ -35,13 +36,13 @@ def save_clusters(log_df,clusters, traces):
         cluster_info_df = pd.DataFrame({'client_id': client_id, 'traces': cluster_traces})
         clusters_to_logs(log_df,cluster_id, cluster_info_df)
 
+
 def clusters_to_logs(original_logs_df, cluster_id, cluster_info_df):
     """
         Iterates over the traces of each client in the cluster and filters them depending on the original
         log file, and saving them as log files to each cluster in a CSV format
 
          """
-
     file_path = f'temp/logs/cluster_log_{cluster_id}.csv'
 
     # Iterate over cluster_info_df and create log files for each cluster
@@ -66,3 +67,20 @@ def clusters_to_logs(original_logs_df, cluster_id, cluster_info_df):
             filtered_logs_df.to_csv(file, sep=';', index=False,header=False, mode='a')
 
 
+def number_traces(path):
+    """
+    calculates the number of traces in the log files of each cluster
+    """
+    files_to_process = []
+    # opens the files named cluster_log where the logs are stored
+    for filename in os.listdir(path):
+        if filename.startswith("cluster_log_"):
+            file_path = os.path.join(path, filename)
+            with open(file_path, 'rb') as f:
+                files_to_process.append(file_path)
+    # iterating over each file and grouping the actions of each client
+    nb_clusters = len(files_to_process)
+    for i in range(nb_clusters):
+        df = pd.read_csv(files_to_process[i], sep=";")
+        traces = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
+        print(files_to_process[i], len(traces))

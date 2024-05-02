@@ -2,17 +2,32 @@ from pydantic import BaseModel, Field, ValidationError
 from enum import Enum
 from typing import Optional, Union
 
+
 class ClusteringMethod(str, Enum):
     Agglomerative = "Agglomerative"
     DBSCAN = "DBScan"
 
+
+class DistanceMeasure(str, Enum):
+    Jaccard = "Jaccard"
+    Hamming = "Hamming"
+    Cosine = "Cosine"
+
+
+class VectorRepresentation(str, Enum):
+    Binary = "Binary Representation"
+    Frequency = "Frequency Representation"
+    RelativeFrequency = "Relative Frequency Representation"
+
+
 class ClusteringParams(BaseModel):
     """
-
+        epsilon and min_samples parameters for dbscan algorithm
+        nbr_cluster and linkage critetia for agglomerative algorithm
+        distance: distance measure for feature based clustering,
     """
-    eps: Optional[float] = None
+    epsilon: Optional[float] = None
     min_samples: Optional[int] = None
-    n_clusters: Optional[int] = None
+    nbr_clusters: Optional[int] = None
     linkage: Optional[str] = None
     distance: Optional[str] = None
-

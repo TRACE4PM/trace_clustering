@@ -1,16 +1,13 @@
-import ast
 import pandas as pd
-from prefixspan import PrefixSpan
 import warnings
-from sklearn.metrics import silhouette_score
-from sklearn.metrics import davies_bouldin_score
 from .distance.distance_measures import levenshtein
-from .clustering_algorithms import agglomerative_clust, dbscan_clust
-from .utils import silhouette_clusters, save_clusters
-from .vector_based_clust.vector_based_clustering import clustering, distanceMeasures, vectorRepresentation
-from .FSS_encoding.data_preparation import (frequent_subsequence_extraction, filterTraces, matrix_direct_succession,
-                                            compute_fss_encoding, replace_fss_in_trace)
-from .distance.utils import number_traces
+from .utils import save_clusters
+from .clustering_methods.clustering_algorithms import clustering
+from .distance.distance_measures import distanceMeasures
+from .feature_based_clustering.FSS_encoding.data_preparation import (frequent_subsequence_extraction,
+                                                                     filterTraces, matrix_direct_succession,
+                                                                    compute_fss_encoding, replace_fss_in_trace)
+from .utils import number_traces
 
 
 def trace_based_clustering(file_path, clustering_methode, params):
@@ -38,10 +35,12 @@ def trace_based_clustering(file_path, clustering_methode, params):
 
     # generating the traces of each user by grouping their actions
     traces = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
+
     # calculated the normalized levenshtein distance matrix for the traces
     distance_matrix = levenshtein(traces)
     print("dist matrix", distance_matrix)
 
+    # Clustering based on the distance matrix and the chosen method
     clusters, cluster_assignement, result = clustering(clustering_methode, distance_matrix, params)
     save_clusters(df, cluster_assignement, traces)
     return result
@@ -61,18 +60,20 @@ def vector_based_clustering(file_path, vector_representation, clustering_method,
             n_cluster and linkage criteria => Agglomerative
             distance : either Jaccard, Cosine, or Hamming distance
     Returns:
-        The scores of the clustering
+        Davis bouldin score
+        Number of clusters
+        Silhouette score of the clustering and for each cluster
     """
     df = pd.read_csv(file_path, sep=";")
 
     df['timestamp'] = pd.to_datetime(df['timestamp'])
     print(vector_representation, clustering_method, params.distance)
-
     traces = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
+
     # get the vector representation of each trace based on the choice of the user
     vectors = vectorRepresentation(vector_representation, traces)
     print(vectors)
-    #
+
     distance_matrix = distanceMeasures(params.distance, vectors, params)
 
     print(distance_matrix)
@@ -85,6 +86,7 @@ def vector_based_clustering(file_path, vector_representation, clustering_method,
 
 
 def feature_based_clustering(file_path):
+
     testTracedf = pd.read_csv(file_path)
 
     # df['timestamp'] = pd.to_datetime(df['timestamp'])

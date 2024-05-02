@@ -79,3 +79,15 @@ def hamming_distance(vectors):
                 distance_matrix[i][j] = distance_matrix[j][i] = round(dist, 3)
 
     return distance_matrix
+
+
+def distanceMeasures(distance, vectors, params):
+    distance_matrix = []
+    if distance == "hamming":
+        distance_matrix = hamming_distance(vectors)
+    elif params.distance == "jaccard":
+        distance_matrix = jaccard_distance(vectors)
+    elif params.distance == "cosine":
+        distance_matrix = cosine_distance(vectors)
+
+    return distance_matrix

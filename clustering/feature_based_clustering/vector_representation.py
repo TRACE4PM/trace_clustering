@@ -52,3 +52,15 @@ def extractRelativeFreq(tracedf, caseIDcol, actionName):
     return relfreq_vectors
 
 
+# ************ chosing the vector representation *********
+
+def vectorRepresentation(vector_representation, traces):
+    vectors = []
+    if vector_representation == "binary representation":
+        vectors = getBinaryRep(traces, "client_id", "trace")
+    elif vector_representation == "frequency representation":
+        vectors = getFreqRep(traces, "client_id", "trace")
+    elif vector_representation == "relative frequency representation":
+        vectors = extractRelativeFreq(traces, "client_id", "trace")
+
+    return vectors
