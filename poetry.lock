@@ -789,6 +789,17 @@ files = [
 ]
 
 [[package]]
+name = "strsim"
+version = "0.0.3"
+description = "A library implementing different string similarity and distance measures"
+optional = false
+python-versions = "*"
+files = [
+    {file = "strsim-0.0.3-py3-none-any.whl", hash = "sha256:e5cf287392f906f0c6338dba8173ba9a05d8c3c173a74082c91220421d64d9fc"},
+    {file = "strsim-0.0.3.tar.gz", hash = "sha256:250cf1f698eceb00856cb368a417790d5f951bdc6329a799d89c6f6b85e41bcb"},
+]
+
+[[package]]
 name = "threadpoolctl"
 version = "3.4.0"
 description = "threadpoolctl"
@@ -835,4 +846,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "1b0d74af7390d074101b32ab02e517a6ffd5b1f8c9fa51d471acc76564db9f05"
+content-hash = "12e2baa92454483c504ce2229363a2bc3a665714efad1a4c1795ceb8d665a84e"

@@ -7,6 +7,9 @@ class ClusteringMethod(str, Enum):
     DBSCAN = "DBScan"
 
 class ClusteringParams(BaseModel):
+    """
+
+    """
     eps: Optional[float] = None
     min_samples: Optional[int] = None
     n_clusters: Optional[int] = None

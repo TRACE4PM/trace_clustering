@@ -10,8 +10,8 @@ def getBinaryRep(tracedf, caseIDcol, actionName):
     df = df.astype(int)
     df[caseIDcol] = tracedf[caseIDcol].to_list()
 
+    # dropping the client_id col to get only the binary vectors
     binary_vectors = df.drop(columns=['client_id']).values
-
     return binary_vectors
 
 
@@ -28,8 +28,9 @@ def getFreqRep(tracedf, caseIDcol, actionName):
     # Replace True with 1 and False with 0
     activitydf = activitydf.astype(int)
     activitydf[caseIDcol] = tracedf[caseIDcol].to_list()
-    freq_vectors = activitydf.drop(columns=['client_id']).values
 
+    # dropping the client_id col to get only the values of the vectors
+    freq_vectors = activitydf.drop(columns=['client_id']).values
     return freq_vectors
 
 
@@ -45,8 +46,9 @@ def extractRelativeFreq(tracedf, caseIDcol, actionName):
             activitydf[count_column_name] = (tracedf[actionName]).apply(lambda x: x.count(activity)/ len(x) if activity in x else 0).to_list()
     # Replace True with 1 and False with 0
     activitydf[caseIDcol] = tracedf[caseIDcol].to_list()
-    relfreq_vectors = activitydf.drop(columns=['client_id']).values
 
+    # dropping the client_id col to get only the values of the vectors
+    relfreq_vectors = activitydf.drop(columns=['client_id']).values
     return relfreq_vectors
 
 

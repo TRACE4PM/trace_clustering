@@ -1,10 +1,10 @@
-from .vector_representation import getBinaryRep, getFreqRep, extractRelativeFreq
-from ..distance.calc_dist import cosine_distance, jaccard_distance, hamming_distance
-from sklearn.metrics import silhouette_score
+import numpy as np
 from sklearn.metrics import davies_bouldin_score
+from sklearn.metrics import silhouette_score
+from .vector_representation import getBinaryRep, getFreqRep, extractRelativeFreq
+from ..distance.distance_measures import cosine_distance, jaccard_distance, hamming_distance
 from ..utils import silhouette_clusters
 from ..clustering_algorithms import agglomerative_clust, dbscan_clust
-import numpy as np
 
 
 def clustering(clustering_method, distance_matrix, params):
