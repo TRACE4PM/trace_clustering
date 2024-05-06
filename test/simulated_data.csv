@@ -1,0 +1,120 @@
+client_id;action;timestamp
+1;DownloadRessource;2024-04-08 05:16:28.443804
+1;DownloadRessource;2024-04-10 13:15:34.504554
+1;ViewingRessource ;2024-04-11 02:50:16.326625
+1;AccessGallicaBlog;2024-04-11 04:44:34.897662
+1;ViewingRessource ;2024-04-16 11:10:36.061249
+1;AdvancedSearch;2024-04-18 08:51:57.399286
+1;AdvancedSearch;2024-04-18 21:35:22.522194
+1;AccessGallicaBlog;2024-04-21 04:17:46.979084
+1;CollectionNavigation;2024-04-22 03:43:19.380066
+1;ViewingRessource ;2024-04-24 05:14:52.726756
+1;HomePage;2024-04-25 08:23:52.436416
+1;ResearchReportExtraction;2024-04-25 13:17:02.826423
+1;ViewingRessource ;2024-04-28 00:01:31.230452
+1;AdvancedSearch;2024-04-30 07:53:10.385915
+1;GallicaSearchEngine;2024-04-30 21:52:36.812931
+1;GallicaSearchEngine;2024-05-02 23:23:51.215524
+1;CollectionNavigation;2024-05-05 23:23:46.772932
+1;ViewingRessource ;2024-05-06 04:25:35.127984
+2;AdvancedSearch;2024-04-07 18:16:10.502718
+2;ResearchReportExtraction;2024-04-08 07:41:03.912914
+2;HomePage;2024-04-12 23:01:33.082877
+2;GallicaSearchEngine;2024-04-16 02:11:30.419248
+2;ViewingRessource ;2024-04-19 03:24:35.864089
+2;DownloadRessource;2024-04-19 05:37:29.600680
+2;ResearchReportExtraction;2024-04-20 05:59:03.477849
+2;HomePage;2024-04-30 20:44:00.984104
+2;CollectionNavigation;2024-05-01 17:58:06.678131
+2;DownloadRessource;2024-05-04 15:36:23.047341
+2;AdvancedSearch;2024-05-05 13:22:16.258826
+2;AccessGallicaBlog;2024-05-06 09:12:24.037616
+3;AdvancedSearch;2024-04-10 07:27:37.193675
+3;AccessGallicaBlog;2024-04-13 18:05:06.736070
+3;HomePage;2024-04-16 16:59:34.082773
+3;HomePage;2024-04-17 06:08:39.810840
+3;AccessGallicaBlog;2024-04-22 02:31:42.930874
+3;ResearchReportExtraction;2024-04-25 08:07:51.419303
+4;AccessGallicaBlog;2024-04-11 11:01:32.854188
+4;AccessGallicaBlog;2024-04-13 20:31:40.921718
+4;ResearchReportExtraction;2024-04-19 14:53:47.142020
+4;ViewingRessource ;2024-04-25 04:09:14.039222
+4;DownloadRessource;2024-04-27 11:46:14.226597
+4;AccessGallicaBlog;2024-05-03 03:00:50.708382
+4;AccessGallicaBlog;2024-05-03 18:30:34.724044
+4;HomePage;2024-05-06 07:15:12.521751
+4;ResearchReportExtraction;2024-05-06 10:49:19.495221
+5;GallicaSearchEngine;2024-04-06 18:15:17.272516
+5;ResearchReportExtraction;2024-04-15 05:46:03.797231
+5;GallicaSearchEngine;2024-04-15 15:50:08.986504
+5;DownloadRessource;2024-04-19 02:33:26.659764
+5;CollectionNavigation;2024-04-23 18:29:55.368102
+5;ViewingRessource ;2024-05-04 19:19:15.645834
+5;CollectionNavigation;2024-05-05 03:30:50.480856
+6;CollectionNavigation;2024-04-15 09:19:37.326442
+6;GallicaSearchEngine;2024-04-17 17:30:02.146379
+6;DownloadRessource;2024-04-18 22:59:15.251187
+6;GallicaSearchEngine;2024-04-22 17:16:43.398950
+6;DownloadRessource;2024-04-26 13:04:16.422936
+6;ResearchReportExtraction;2024-04-29 17:08:05.690742
+6;ResearchReportExtraction;2024-04-30 10:02:53.682694
+6;GallicaSearchEngine;2024-05-04 06:07:32.292975
+6;DownloadRessource;2024-05-04 09:18:16.034744
+6;DownloadRessource;2024-05-04 09:24:22.124859
+6;ViewingRessource ;2024-05-05 20:19:38.258929
+7;AccessGallicaBlog;2024-04-06 17:48:14.342931
+7;GallicaSearchEngine;2024-04-10 12:27:32.901069
+7;ViewingRessource ;2024-04-12 11:40:03.250418
+7;HomePage;2024-04-13 10:56:34.902700
+7;AccessGallicaBlog;2024-04-16 23:23:43.843385
+7;HomePage;2024-04-19 20:34:56.926503
+7;AdvancedSearch;2024-04-19 21:56:48.028210
+7;CollectionNavigation;2024-04-19 23:24:18.281914
+7;GallicaSearchEngine;2024-04-20 10:25:42.389147
+7;GallicaSearchEngine;2024-04-22 17:32:38.430685
+7;ViewingRessource ;2024-04-26 17:03:11.010561
+7;DownloadRessource;2024-04-27 05:05:07.526700
+7;CollectionNavigation;2024-04-28 07:00:26.879891
+7;ResearchReportExtraction;2024-04-28 22:39:58.185002
+7;CollectionNavigation;2024-05-01 01:04:19.956487
+7;AdvancedSearch;2024-05-02 10:56:43.777157
+8;CollectionNavigation;2024-04-08 09:30:39.479168
+8;AdvancedSearch;2024-04-08 19:04:05.221475
+8;AccessGallicaBlog;2024-04-11 12:26:32.183532
+8;CollectionNavigation;2024-04-12 01:15:09.646958
+8;GallicaSearchEngine;2024-04-12 02:18:47.333414
+8;AccessGallicaBlog;2024-04-12 08:55:45.637330
+8;ViewingRessource ;2024-04-14 22:45:03.511954
+8;GallicaSearchEngine;2024-04-21 01:42:26.426493
+8;ViewingRessource ;2024-04-24 11:53:47.458257
+8;DownloadRessource;2024-04-26 11:19:31.780920
+8;CollectionNavigation;2024-04-29 15:51:55.635190
+8;HomePage;2024-05-02 12:14:02.185966
+8;AccessGallicaBlog;2024-05-05 23:49:14.671880
+8;AccessGallicaBlog;2024-05-06 12:04:18.095589
+9;HomePage;2024-04-06 17:40:41.898913
+9;ViewingRessource ;2024-04-07 16:24:52.040097
+9;GallicaSearchEngine;2024-04-09 10:57:52.380429
+9;CollectionNavigation;2024-04-09 20:56:20.332542
+9;ViewingRessource ;2024-04-14 15:53:15.572121
+9;DownloadRessource;2024-04-19 23:44:37.680190
+9;AdvancedSearch;2024-04-24 21:43:43.404899
+9;DownloadRessource;2024-04-25 00:13:50.466634
+9;AccessGallicaBlog;2024-04-27 00:21:07.586198
+9;AccessGallicaBlog;2024-04-28 15:36:39.795460
+9;DownloadRessource;2024-04-30 07:29:06.010266
+9;GallicaSearchEngine;2024-05-04 19:58:24.490086
+10;HomePage;2024-04-09 21:20:59.928137
+10;GallicaSearchEngine;2024-04-10 08:05:01.644425
+10;DownloadRessource;2024-04-10 12:22:12.611711
+10;ViewingRessource ;2024-04-12 00:21:26.234730
+10;AccessGallicaBlog;2024-04-12 23:49:48.962047
+10;CollectionNavigation;2024-04-15 21:43:02.176639
+10;AdvancedSearch;2024-04-19 06:26:40.921109
+10;DownloadRessource;2024-04-20 12:00:44.799182
+10;ResearchReportExtraction;2024-04-23 15:07:18.650501
+10;DownloadRessource;2024-04-26 06:42:28.849844
+10;DownloadRessource;2024-05-04 02:08:35.552032
+10;ViewingRessource ;2024-05-04 04:55:19.707743
+10;AdvancedSearch;2024-05-04 05:22:37.961044
+10;HomePage;2024-05-05 00:38:50.830478

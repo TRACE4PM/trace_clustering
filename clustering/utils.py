@@ -21,7 +21,7 @@ def silhouette_clusters(distance_matrix, cluster_assignement):
     return cluster_silhouette_scores
 
 
-def save_clusters(log_df,clusters, traces):
+def save_clusters(log_df,clusters, traces,name_col):
     """
         Prepares the data of each cluster 'cluster_id' and
         'cluster_info_df' which is a dataframe that stores the traces of each client_id in the cluster
@@ -31,13 +31,13 @@ def save_clusters(log_df,clusters, traces):
     for cluster_id in np.unique(clusters):
         if cluster_id == -1:
             continue
-        cluster_traces = traces[clusters == cluster_id]['trace']
+        cluster_traces = traces[clusters == cluster_id][name_col]
         client_id = traces[clusters == cluster_id]['client_id']
         cluster_info_df = pd.DataFrame({'client_id': client_id, 'traces': cluster_traces})
-        clusters_to_logs(log_df,cluster_id, cluster_info_df)
+        clusters_to_logs(log_df,cluster_id, cluster_info_df, name_col)
 
 
-def clusters_to_logs(original_logs_df, cluster_id, cluster_info_df):
+def clusters_to_logs(original_logs_df, cluster_id, cluster_info_df, name_col):
     """
         Iterates over the traces of each client in the cluster and filters them depending on the original
         log file, and saving them as log files to each cluster in a CSV format
@@ -51,7 +51,7 @@ def clusters_to_logs(original_logs_df, cluster_id, cluster_info_df):
         writer.writerow(['client_id', 'action', 'timestamp'])
         for index, row in cluster_info_df.iterrows():
             client_ids = row['client_id']
-            traces = row['traces']
+            traces = row[name_col]
             client_ids_list = client_ids.split(',')
 
             # Filter original logs for client_ids in the current cluster
