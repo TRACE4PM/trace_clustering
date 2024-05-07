@@ -1,11 +1,13 @@
 from clustering.main import trace_based_clustering, vector_based_clustering, feature_based_clustering
 from clustering.models.cluster_params import ClusteringParams
+import time
 
 file_path = "/home/ania/Desktop/trace_clustering/services/clustering/test/result_res10k.csv"
 # file_path = "/home/ania/Desktop/trace_clustering/services/clustering/test/TraceTestFile.csv"
 # file_path = "/home/ania/Desktop/trace_clustering/services/clustering/test/simulated_data.csv"
 
 if __name__ == "__main__":
+    start_time = time.time()
 
     #*******************  trace based test  *******************
 
@@ -23,7 +25,7 @@ if __name__ == "__main__":
     #     result = trace_based_clustering(file_path, clustering_algorithm, algorithm_params)
     #     print(result)
 
-    # ****************** vector based test *****************
+    # ****************** test feature based with vector representations *****************
 
     # clustering_algorithm = "agglomerative"
     # vector_rep = "binary representation"
@@ -32,16 +34,17 @@ if __name__ == "__main__":
     # else:
     #
     #     if clustering_algorithm == 'dbscan':
-    #         algorithm_params = ClusteringParams(epsilon=0.5, min_samples=2, distance = 'jaccard')
+    #         algorithm_params = ClusteringParams(epsilon=0.5, min_samples=2, distance = 'cosine')
     #     elif clustering_algorithm == 'agglomerative':
-    #         algorithm_params = ClusteringParams(nbr_clusters=2, linkage='single', distance = 'jaccard')
+    #         algorithm_params = ClusteringParams(nbr_clusters=2, linkage='single', distance = 'cosine')
     #
     #     print(vector_based_clustering(file_path, vector_rep, clustering_algorithm, algorithm_params))
-    #
+
 
     # ****************** feature based test *****************
 
-    clustering_algorithm = "agglomerative"
+
+    clustering_algorithm = "dbscan"
     if clustering_algorithm not in ['dbscan', 'agglomerative']:
         print("Invalid clustering algorithm.")
     else:
@@ -52,4 +55,7 @@ if __name__ == "__main__":
             algorithm_params = ClusteringParams(nbr_clusters=3, linkage='complete', distance = 'jaccard')
 
 
-    feature_based_clustering(file_path, clustering_algorithm, algorithm_params)
+    resutl = feature_based_clustering(file_path,clustering_algorithm, algorithm_params)
+    print(resutl)
+    print("temps FSS + clustering")
+    print("--- %s seconds ---" % (time.time() - start_time))

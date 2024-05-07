@@ -8,7 +8,6 @@ def levenshtein(traces):
     """
     Levenshtein distance measure is used for trace based clustering to calculate the distance between 2 traces
     Return : Normalized Distance matrix
-
     """
     matrix_size = len(traces)
     distance_matrix = np.empty((matrix_size, matrix_size), float)
@@ -19,15 +18,16 @@ def levenshtein(traces):
             distance_matrix[i][j] = 0
         else:
             while (j < i):
-                string1 = traces.iloc[i]['trace']
-                string2 = traces.iloc[j]['trace']
-                lev_dist = normalized_levenshtein.distance(string1, string2)
-                distance_matrix[i][j] = distance_matrix[j][i] = round(lev_dist, 3)
+                if type(traces) is list:
+                    # for fss encoding the vectors are a list
+                    lev_dist = normalized_levenshtein.distance(traces[i], traces[j])
+                else:
+                    lev_dist = normalized_levenshtein.distance(traces.iloc[i]['trace'], traces.iloc[j]['trace'])
+                distance_matrix[i][j] = distance_matrix[j][i] = lev_dist
                 j = j + 1
             distance_matrix[i][j] = 0
             j = 0
     return distance_matrix
-
 
 ################# Distance measures for feature based clustering ########################
 
@@ -44,7 +44,7 @@ def cosine_distance(vectors):
                 v1 = vectors[i]
                 v2 = vectors[j]
                 dist = distance.cosine(v1, v2)
-                distance_matrix[i][j] = distance_matrix[j][i] = round(dist, 3)
+                distance_matrix[i][j] = distance_matrix[j][i] = dist
 
     return distance_matrix
 
@@ -60,7 +60,7 @@ def jaccard_distance(vectors):
                 v1 = vectors[i]
                 v2 = vectors[j]
                 dist = jaccard(v1, v2)
-                distance_matrix[i][j] = distance_matrix[j][i] = round(dist, 3)
+                distance_matrix[i][j] = distance_matrix[j][i] = dist
     return distance_matrix
 
 
@@ -76,18 +76,18 @@ def hamming_distance(vectors):
                 v1 = vectors[i]
                 v2 = vectors[j]
                 dist = distance.hamming(v1, v2)
-                distance_matrix[i][j] = distance_matrix[j][i] = round(dist, 3)
+                distance_matrix[i][j] = distance_matrix[j][i] = dist
 
     return distance_matrix
 
 
-def distanceMeasures(distance, vectors, params):
+def distanceMeasures(vectors, distance):
     distance_matrix = []
     if distance == "hamming":
         distance_matrix = hamming_distance(vectors)
-    elif params.distance == "jaccard":
+    elif distance == "jaccard":
         distance_matrix = jaccard_distance(vectors)
-    elif params.distance == "cosine":
+    elif distance == "cosine":
         distance_matrix = cosine_distance(vectors)
 
     return distance_matrix
