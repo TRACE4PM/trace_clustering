@@ -1,6 +1,6 @@
 import pandas as pd
 import warnings
-from .clustering_methods.clustering_algorithms import clustering
+from .clustering_methods.clustering_algorithms import clustering, meanshift
 from .distance.distance_measures import distanceMeasures
 from .distance.distance_measures import levenshtein
 from .feature_based_clustering.vector_representation import vectorRepresentation, get_FSS_encoding
@@ -40,7 +40,7 @@ def trace_based_clustering(file_path, clustering_methode, params):
 
     # Clustering based on the distance matrix and the chosen method
     clusters, cluster_assignement, result = clustering(clustering_methode, distance_matrix, params)
-    save_clusters(df, cluster_assignement, traces, 'trace')
+    save_clusters(df, cluster_assignement, traces)
     return result
 
 
@@ -82,23 +82,58 @@ def vector_based_clustering(file_path, vector_representation, clustering_method,
     number_traces("temp/logs/")
     return result
 
+#
+# def feature_based_clustering(file_path, clustering_method, params):
+#     """
+#         feature based clustering using fss encoding dependign on the choice of the clustering method
+#
+#     """
+#     df = pd.read_csv(file_path, sep=";")
+#     traceDf = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
+#     traceDf['trace'] = traceDf['trace'].apply(lambda x: str(x))
+#     fss_encoded_vectors, replaced_traces = get_FSS_encoding(traceDf, 'trace', 30, 0)
+#     print("replaces traces ", replaced_traces)
+#     columns_to_keep =['client_id', 'trace']
+#     # Create a new DataFrame with only the specified columns
+#     trace_cols= replaced_traces[columns_to_keep]
+#     distance_matrix = distanceMeasures(fss_encoded_vectors, params.distance)
+#     # TODO :
+#     #   fix levenshtein distances, it takes too much time (96seconds) compared to the other distance measures (1s)
+#     # distance_matrix = levenshtein(fss_encoded_vectors)
+#
+#     n_clusters_, labels_ms, result_df =  meanshift(distance_matrix, trace_cols)
+#
+#     print(n_clusters_)
+#     print(labels_ms)
+#     for cluster_id in range(n_clusters_):
+#         cluster_traces = df[result_df['cluster_id'] == cluster_id][['client_id', 'action', 'timestamp']]
+#         cluster_traces.to_csv(f'cluster_{cluster_id}_traces.csv', index=False)
+#     # Fss_save_logs(df, labels_ms,trace_cols)
+#     # result_clustering_real_log(df,result_df)
+#     # clusters, cluster_assignement, result = clustering(clustering_method, distance_matrix, params)
+#
+#     return result_df
+
 
 def feature_based_clustering(file_path, clustering_method, params):
     """
-        feature based clustering using fss encoding dependign on the choice of the clusterig method
-
+    feature based clustering using fss encoding depending on the choice of the clustering method
     """
     df = pd.read_csv(file_path, sep=";")
     traceDf = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
     traceDf['trace'] = traceDf['trace'].apply(lambda x: str(x))
-    print(traceDf)
-    fss_encoded_vectors = get_FSS_encoding(traceDf, 'trace', 30, 0)
+    fss_encoded_vectors, replaced_traces = get_FSS_encoding(traceDf, 'trace', 30, 0)
+    columns_to_keep = ['client_id', 'trace']
+    # Create a new DataFrame with only the specified columns
+    trace_cols = replaced_traces[columns_to_keep]
     distance_matrix = distanceMeasures(fss_encoded_vectors, params.distance)
 
-    # TODO :
-    #   fix levenshtein distances, it takes too much time (96seconds) compared to the other distance measures (1s)
-    # distance_matrix = levenshtein(fss_encoded_vectors)
+    n_clusters_, labels_ms, result_df = meanshift(distance_matrix, trace_cols)
 
-    clusters, cluster_assignement, result = clustering(clustering_method, distance_matrix, params)
+    # Save traces of each cluster into separate CSV files
+    for cluster_id in range(n_clusters_):
+        cluster_indices = result_df[result_df['cluster_id'] == cluster_id].index
+        cluster_traces = df.iloc[cluster_indices][['client_id', 'action', 'timestamp']]
+        cluster_traces.to_csv(f'temp/logs/cluster_log_{cluster_id}.csv',  sep=';',index=False)
 
-    return result
+    return result_df

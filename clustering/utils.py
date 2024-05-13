@@ -15,13 +15,13 @@ def silhouette_clusters(distance_matrix, cluster_assignement):
     # iterates over unique_labels of each cluster
     for label in unique_labels:
         cluster_mask = (cluster_assignement == label)
-        cluster_silhouette= silhouette_vals[cluster_mask].mean()
+        cluster_silhouette = silhouette_vals[cluster_mask].mean()
         cluster_silhouette_scores.append(cluster_silhouette)
 
     return cluster_silhouette_scores
 
 
-def save_clusters(log_df,clusters, traces):
+def save_clusters(log_df, clusters, traces):
     """
         Prepares the data of each cluster 'cluster_id' and
         'cluster_info_df' which is a dataframe that stores the traces of each client_id in the cluster
@@ -34,14 +34,13 @@ def save_clusters(log_df,clusters, traces):
         cluster_traces = traces[clusters == cluster_id]['trace']
         client_id = traces[clusters == cluster_id]['client_id']
         cluster_info_df = pd.DataFrame({'client_id': client_id, 'traces': cluster_traces})
-        clusters_to_logs(log_df,cluster_id, cluster_info_df)
+        clusters_to_logs(log_df, cluster_id, cluster_info_df)
 
 
 def clusters_to_logs(original_logs_df, cluster_id, cluster_info_df):
     """
         Iterates over the traces of each client in the cluster and filters them depending on the original
         log file, and saving them as log files to each cluster in a CSV format
-
          """
     file_path = f'temp/logs/cluster_log_{cluster_id}.csv'
 
@@ -51,20 +50,21 @@ def clusters_to_logs(original_logs_df, cluster_id, cluster_info_df):
         writer.writerow(['client_id', 'action', 'timestamp'])
         for index, row in cluster_info_df.iterrows():
             client_ids = row['client_id']
+            print("client ids",client_ids)
             traces = row['traces']
             client_ids_list = client_ids.split(',')
-
+            print("client ids list", client_ids_list)
             # Filter original logs for client_ids in the current cluster
             cluster_logs_df = original_logs_df[original_logs_df['client_id'].isin(client_ids_list)]
-
             # Filter logs based on traces in the cluster
             filtered_logs_df = pd.DataFrame(columns=['client_id', 'action', 'timestamp'])
-            filtered_logs_df['timestamp'] = pd.to_datetime(filtered_logs_df['timestamp'], format ='%d/%m/%y, %H:%M', utc=True)
+            filtered_logs_df['timestamp'] = pd.to_datetime(filtered_logs_df['timestamp'], format='%d/%m/%y, %H:%M',
+                                                           utc=True)
             filtered_logs_df = pd.concat([filtered_logs_df, cluster_logs_df[cluster_logs_df['action'].isin(traces)]],
                                          ignore_index=True)
 
             # Write the cluster logs to a CSV file
-            filtered_logs_df.to_csv(file, sep=';', index=False,header=False, mode='a')
+            filtered_logs_df.to_csv(file, sep=';', index=False, header=False, mode='a')
 
 
 def number_traces(path):

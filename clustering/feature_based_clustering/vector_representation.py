@@ -75,7 +75,7 @@ def get_FSS_encoding(tracedf, trace_col, min_support_percentage, min_length):
 
     fss_encoded_vectors = same_length_vectors(replaced_trace['trace_FSSEncoded'])
 
-    return fss_encoded_vectors.to_list()
+    return fss_encoded_vectors.to_list(), replaced_trace
 
 
 # ************ chosing the vector representation *********

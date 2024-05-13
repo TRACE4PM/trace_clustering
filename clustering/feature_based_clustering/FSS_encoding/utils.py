@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 from similarity.normalized_levenshtein import NormalizedLevenshtein
-from sklearn.cluster import MeanShift, estimate_bandwidth
 from sklearn.metrics import davies_bouldin_score, silhouette_score
 
 

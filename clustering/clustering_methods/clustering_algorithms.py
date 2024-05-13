@@ -1,5 +1,6 @@
+import pandas as pd
 import numpy as np
-from sklearn.cluster import AgglomerativeClustering,DBSCAN
+from sklearn.cluster import AgglomerativeClustering,DBSCAN, MeanShift, estimate_bandwidth
 from sklearn.metrics import davies_bouldin_score, silhouette_score
 from ..utils import silhouette_clusters
 
@@ -48,7 +49,9 @@ def clustering(clustering_method, distance_matrix, params):
 
 # this function is for FSS encoding
 # Updating it later with other methods
-def meanshift(distmatrix, list_keys):
+
+def meanshift(distmatrix, traces_df):
+    list_keys = traces_df['client_id']
     # The following bandwidth can be automatically detected using
     bandwidth = estimate_bandwidth(distmatrix)
     ms = MeanShift(bandwidth=bandwidth)
@@ -59,6 +62,7 @@ def meanshift(distmatrix, list_keys):
     print(list_keys, labels_ms)
     n_clusters_ = len(labels_unique)
     print('Estimated number of clusters: %d' % n_clusters_)
+    result_df = pd.DataFrame({'client_id': list_keys, 'cluster_id': labels_ms})
     # Number of clusters in labels, ignoring noise if present.
     n_clusters_ = len(set(labels_ms)) - (1 if -1 in labels_ms else 0)
     n_noise_ = list(labels_ms).count(-1)
@@ -73,4 +77,4 @@ def meanshift(distmatrix, list_keys):
         print("Silhouette Coefficient: %0.3f" % silhouette_score(distmatrix, labels_ms))
         print("Davies bouldin score: %0.3f" % davies_bouldin_score(distmatrix, labels_ms))
 
-    return n_clusters_, labels_ms
+    return n_clusters_, labels_ms, result_df
