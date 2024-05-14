@@ -50,31 +50,29 @@ def clustering(clustering_method, distance_matrix, params):
 # this function is for FSS encoding
 # Updating it later with other methods
 
-def meanshift(distmatrix, traces_df):
+def meanshift(distance_matrix, traces_df):
     list_keys = traces_df['client_id']
-    # The following bandwidth can be automatically detected using
-    bandwidth = estimate_bandwidth(distmatrix)
+    # The following bandwidth can be automatically detected using this function
+    bandwidth = estimate_bandwidth(distance_matrix)
     ms = MeanShift(bandwidth=bandwidth)
-    ms.fit(distmatrix)
+    ms.fit(distance_matrix)
     labels_ms = ms.labels_
-    cluster_centers = ms.cluster_centers_
     labels_unique = np.unique(labels_ms)
-    print(list_keys, labels_ms)
     n_clusters_ = len(labels_unique)
     print('Estimated number of clusters: %d' % n_clusters_)
     result_df = pd.DataFrame({'client_id': list_keys, 'cluster_id': labels_ms})
     # Number of clusters in labels, ignoring noise if present.
     n_clusters_ = len(set(labels_ms)) - (1 if -1 in labels_ms else 0)
-    n_noise_ = list(labels_ms).count(-1)
     for i in range(n_clusters_):
         firstclasse = list(labels_ms).count(i)
         print('Estimated number of', i, ' points: %d' % firstclasse)
 
-    print('Estimated number of noise points: %d' % n_noise_)
-    # print("Homogeneity: %0.3f" % homogeneity_score(labels))
-    if n_clusters_ > 1:
-        print("distance matrix", distmatrix)
-        print("Silhouette Coefficient: %0.3f" % silhouette_score(distmatrix, labels_ms))
-        print("Davies bouldin score: %0.3f" % davies_bouldin_score(distmatrix, labels_ms))
+    scores = {}
+    db_score = davies_bouldin_score(distance_matrix, labels_ms)
+    scores["Davies bouldin"] = db_score
+    silhouette = silhouette_score(distance_matrix, labels_ms)
+    scores["Silhouette"] = silhouette
+    scores["Number of clusters"] = len(np.unique(labels_ms))
+    scores["Silhouette of each cluster"] = silhouette_clusters(distance_matrix, labels_ms)
 
-    return n_clusters_, labels_ms, result_df
+    return n_clusters_, labels_ms, result_df, scores

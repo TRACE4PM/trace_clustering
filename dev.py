@@ -1,4 +1,4 @@
-from clustering.main import trace_based_clustering, vector_based_clustering, feature_based_clustering
+from clustering.main import trace_based_clustering, vector_based_clustering, fss_meanshift,feature_based_clustering
 from clustering.models.cluster_params import ClusteringParams
 import time
 
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     #     elif clustering_algorithm == 'agglomerative':
     #         algorithm_params = ClusteringParams(nbr_clusters=2, linkage='single', distance = 'cosine')
     #
-    #     print(vector_based_clustering(file_path, vector_rep, clustering_algorithm, algorithm_params))
+    #     print(feature_based_clustering(file_path, vector_rep, clustering_algorithm, algorithm_params))
 
 
     # ****************** feature based test *****************
@@ -54,7 +54,7 @@ if __name__ == "__main__":
         elif clustering_algorithm == 'agglomerative':
             algorithm_params = ClusteringParams(nbr_clusters=3, linkage='complete', distance = 'hamming')
 
-
-    resutl = feature_based_clustering(file_path,clustering_algorithm, algorithm_params)
+    resutl = fss_meanshift(file_path, algorithm_params)
+    print(resutl)
     print("temps FSS + clustering")
     print("--- %s seconds ---" % (time.time() - start_time))

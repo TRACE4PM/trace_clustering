@@ -84,3 +84,10 @@ def number_traces(path):
         df = pd.read_csv(files_to_process[i], sep=";")
         traces = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
         print(files_to_process[i], len(traces))
+
+
+def empty_directory(directory):
+    if os.path.exists(directory):
+        files = os.listdir(directory)
+        for file in files:
+            os.remove(os.path.join(directory, file))
