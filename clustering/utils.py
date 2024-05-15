@@ -50,10 +50,8 @@ def clusters_to_logs(original_logs_df, cluster_id, cluster_info_df):
         writer.writerow(['client_id', 'action', 'timestamp'])
         for index, row in cluster_info_df.iterrows():
             client_ids = row['client_id']
-            print("client ids",client_ids)
             traces = row['traces']
             client_ids_list = client_ids.split(',')
-            print("client ids list", client_ids_list)
             # Filter original logs for client_ids in the current cluster
             cluster_logs_df = original_logs_df[original_logs_df['client_id'].isin(client_ids_list)]
             # Filter logs based on traces in the cluster
@@ -72,6 +70,7 @@ def number_traces(path):
     calculates the number of traces in the log files of each cluster
     """
     files_to_process = []
+    nb_traces = []
     # opens the files named cluster_log where the logs are stored
     for filename in os.listdir(path):
         if filename.startswith("cluster_log_"):
@@ -79,15 +78,21 @@ def number_traces(path):
             with open(file_path, 'rb') as f:
                 files_to_process.append(file_path)
     # iterating over each file and grouping the actions of each client
+    nb_traces = {"Cluster n": [], "Number of traces": []}  # Initialize dictionary to store cluster info
     nb_clusters = len(files_to_process)
     for i in range(nb_clusters):
         df = pd.read_csv(files_to_process[i], sep=";")
+        # Group by client_id and aggregate actions into lists
         traces = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
-        print(files_to_process[i], len(traces))
+        nb_traces["Cluster n"].append(i)  # Append cluster number to list
+        nb_traces["Number of traces"].append(len(traces))  # Append number of traces to list
+
+    return nb_traces
 
 
-def empty_directory(directory):
-    if os.path.exists(directory):
-        files = os.listdir(directory)
+def empty_directory(directory_path):
+    # Remove the files already existing a directory
+    if os.path.exists(directory_path):
+        files = os.listdir(directory_path)
         for file in files:
-            os.remove(os.path.join(directory, file))
+            os.remove(os.path.join(directory_path, file))

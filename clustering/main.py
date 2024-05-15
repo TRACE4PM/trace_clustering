@@ -35,13 +35,14 @@ def trace_based_clustering(file_path, clustering_methode, params):
     traces = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
 
     # calculated the normalized levenshtein distance matrix for the traces
-    distance_matrix = levenshtein(traces['trace'])
+    distance_matrix = levenshtein(traces)
     print("dist matrix", distance_matrix)
 
     # Clustering based on the distance matrix and the chosen method
     clusters, cluster_assignement, result = clustering(clustering_methode, distance_matrix, params)
     save_clusters(df, cluster_assignement, traces)
-    return result
+    nb = number_traces('temp/logs')
+    return result, nb
 
 
 def vector_based_clustering(file_path, vector_representation, clustering_method, params):
@@ -71,7 +72,7 @@ def vector_based_clustering(file_path, vector_representation, clustering_method,
     # get the vector representation of each trace based on the choice of the user
     vectors = vectorRepresentation(vector_representation, traces)
     print(vectors)
-
+    # generate the distance matrix using the distance measure the user choses
     distance_matrix = distanceMeasures(vectors, params.distance)
 
     print(distance_matrix)
@@ -81,8 +82,8 @@ def vector_based_clustering(file_path, vector_representation, clustering_method,
     empty_directory('temp/logs')
     # Saving the clusters on temp log files
     save_clusters(df, cluster_assignement, traces)
-    number_traces("temp/logs/")
-    return result
+    nb = number_traces("temp/logs/")
+    return result, nb
 
 
 def feature_based_clustering(file_path, clustering_method, params):
@@ -92,7 +93,7 @@ def feature_based_clustering(file_path, clustering_method, params):
     df = pd.read_csv(file_path, sep=";")
     traceDf = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
     traceDf['trace'] = traceDf['trace'].apply(lambda x: str(x))
-    fss_encoded_vectors, replaced_traces = get_FSS_encoding(traceDf, 'trace', 30, 0)
+    fss_encoded_vectors, replaced_traces = get_FSS_encoding(traceDf, 'trace', 800, 0)
     print("replaces traces ", replaced_traces)
     columns_to_keep =['client_id', 'trace']
     # Create a new DataFrame with only the specified columns
@@ -117,12 +118,12 @@ def fss_meanshift(file_path, params):
     df = pd.read_csv(file_path, sep=";")
     traceDf = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
     traceDf['trace'] = traceDf['trace'].apply(lambda x: str(x))
+
     fss_encoded_vectors, replaced_traces = get_FSS_encoding(traceDf, 'trace', 30, 0)
+    distance_matrix = distanceMeasures(fss_encoded_vectors, params.distance)
     columns_to_keep = ['client_id', 'trace']
     # Create a new DataFrame with only the specified columns
     trace_cols = replaced_traces[columns_to_keep]
-    distance_matrix = distanceMeasures(fss_encoded_vectors, params.distance)
-
     n_clusters_, labels_ms, result_df, scores = meanshift(distance_matrix, trace_cols)
 
     empty_directory('temp/logs')
@@ -132,4 +133,5 @@ def fss_meanshift(file_path, params):
         cluster_traces = df.iloc[cluster_indices][['client_id', 'action', 'timestamp']]
         cluster_traces.to_csv(f'temp/logs/cluster_log_{cluster_id}.csv',  sep=';',index=False)
 
-    return scores
+    nb = number_traces("temp/logs/")
+    return scores, nb

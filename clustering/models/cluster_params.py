@@ -5,7 +5,7 @@ from typing import Optional, Union
 
 class ClusteringMethod(str, Enum):
     Agglomerative = "Agglomerative"
-    DBSCAN = "DBScan"
+    DBSCAN = "DBSCAN"
 
 
 class DistanceMeasure(str, Enum):
