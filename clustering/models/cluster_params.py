@@ -24,10 +24,9 @@ class ClusteringParams(BaseModel):
     """
         epsilon and min_samples parameters for dbscan algorithm
         nbr_cluster and linkage critetia for agglomerative algorithm
-        distance: distance measure for feature based clustering,
     """
     epsilon: Optional[float] = None
     min_samples: Optional[int] = None
     nbr_clusters: Optional[int] = None
     linkage: Optional[str] = None
-    distance: Optional[str] = None
+

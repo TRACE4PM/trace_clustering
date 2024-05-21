@@ -12,22 +12,16 @@ def levenshtein(traces):
     matrix_size = len(traces)
     distance_matrix = np.empty((matrix_size, matrix_size), float)
     normalized_levenshtein = NormalizedLevenshtein()
-    j = 0
-    for i in range(0, matrix_size):
-        if (i == j):
-            distance_matrix[i][j] = 0
-        else:
-            while (j < i):
-                if type(traces) is list:
-                    # for fss encoding the vectors are a list
-                    lev_dist = normalized_levenshtein.distance(traces[i], traces[j])
-                else:
-                    lev_dist = normalized_levenshtein.distance(traces.iloc[i]['trace'], traces.iloc[j]['trace'])
+    for i in range(matrix_size):
+        for j in range(i, matrix_size):
+            if i == j:
+                distance_matrix[i][j] = 0
+            else:
+                lev_dist = normalized_levenshtein.distance(traces[i], traces[j])
                 distance_matrix[i][j] = distance_matrix[j][i] = lev_dist
-                j = j + 1
-            distance_matrix[i][j] = 0
-            j = 0
     return distance_matrix
+
+
 
 ################# Distance measures for feature based clustering ########################
 

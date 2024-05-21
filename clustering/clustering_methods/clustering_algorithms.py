@@ -35,6 +35,9 @@ def clustering(clustering_method, distance_matrix, params):
     elif clustering_method.lower() == "agglomerative":
         clusters, cluster_assignement = agglomerative_clust(distance_matrix, params)
 
+    elif clustering_method.lower() == "agglomerative_ward":
+        clusters, cluster_assignement = agglomerative_ward(distance_matrix, params)
+
     db_score = davies_bouldin_score(distance_matrix, cluster_assignement)
     result["Davies bouldin"] = db_score
     silhouette = silhouette_score(distance_matrix, cluster_assignement)
@@ -76,3 +79,8 @@ def meanshift(distance_matrix, traces_df):
     scores["Silhouette of each cluster"] = silhouette_clusters(distance_matrix, labels_ms)
 
     return n_clusters_, labels_ms, result_df, scores
+
+def agglomerative_ward(data, nbr_clusters):
+    cluster = AgglomerativeClustering(n_clusters=nbr_clusters, linkage='ward', metric='euclidean')
+    cluster_assignments = cluster.fit_predict(data)
+    return cluster, cluster_assignments
