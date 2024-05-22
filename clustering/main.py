@@ -42,7 +42,6 @@ def trace_based_clustering(file_path, clustering_methode, params):
     # Clustering based on the distance matrix and the chosen method
     clusters, cluster_assignement, result = clustering(clustering_methode, distance_matrix, params)
     # Remove the previous files in the log directory before saving the new logs
-    empty_directory('temp/logs')
     save_clusters(df, cluster_assignement, traces)
     nb = number_traces('temp/logs')
     return result, nb

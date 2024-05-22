@@ -21,39 +21,38 @@ if __name__ == "__main__":
     #         algorithm_params = ClusteringParams(epsilon=0.3, min_samples=5)
     #     elif clustering_algorithm == 'agglomerative':
     #         algorithm_params = ClusteringParams(nbr_clusters=3, linkage='single')
-
+    #
     #     print(trace_based_clustering(file_path, clustering_algorithm, algorithm_params))
 
     # ****************** test feature based with vector representations *****************
 
-    # clustering_algorithm = "agglomerative"
-    # vector_rep = "frequency representation"
-    # if clustering_algorithm not in ['dbscan', 'agglomerative']:
-    #     print("Invalid clustering algorithm.")
-    # else:
-    #
-    #     if clustering_algorithm == 'dbscan':
-    #         algorithm_params = ClusteringParams(epsilon=0.1, min_samples=2, distance = 'cosine')
-    #     elif clustering_algorithm == 'agglomerative':
-    #         algorithm_params = ClusteringParams(nbr_clusters=3, linkage='single', distance = 'cosine')
-    #
-    #     print(vector_based_clustering(file_path,vector_rep, clustering_algorithm, algorithm_params))
-
-
-    # ****************** feature based test *****************
-
-
-    clustering_algorithm = "dbscan"
+    clustering_algorithm = "agglomerative"
+    vector_rep = "frequency representation"
     if clustering_algorithm not in ['dbscan', 'agglomerative']:
         print("Invalid clustering algorithm.")
     else:
 
         if clustering_algorithm == 'dbscan':
-            algorithm_params = ClusteringParams(epsilon=0.3, min_samples=5, distance = 'jaccard')
+            algorithm_params = ClusteringParams(epsilon=0.1, min_samples=2, distance = 'cosine')
         elif clustering_algorithm == 'agglomerative':
-            algorithm_params = ClusteringParams(nbr_clusters=3, linkage='complete', distance = 'hamming')
+            algorithm_params = ClusteringParams(nbr_clusters=3, linkage='single', distance = 'cosine')
 
-    print(fss_meanshift(file_path, algorithm_params.distance,  80, 0))
+        print(feature_based_clustering(file_path, clustering_algorithm, algorithm_params, 80, 0))
+
+    # ****************** feature based test *****************
+
+
+    # clustering_algorithm = "dbscan"
+    # if clustering_algorithm not in ['dbscan', 'agglomerative']:
+    #     print("Invalid clustering algorithm.")
+    # else:
+    #
+    #     if clustering_algorithm == 'dbscan':
+    #         algorithm_params = ClusteringParams(epsilon=0.3, min_samples=5, distance = 'jaccard')
+    #     elif clustering_algorithm == 'agglomerative':
+    #         algorithm_params = ClusteringParams(nbr_clusters=3, linkage='complete', distance = 'hamming')
+    #
+    # print(fss_meanshift(file_path, algorithm_params.distance,  80, 0))
 
     print("temps FSS + clustering")
     print("--- %s seconds ---" % (time.time() - start_time))
