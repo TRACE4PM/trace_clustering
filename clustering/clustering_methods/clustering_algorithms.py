@@ -38,7 +38,16 @@ def meanshift(distance_matrix, traces_df):
     # Number of clusters in labels, ignoring noise if present.
     n_clusters_ = len(set(cluster_assignement)) - (1 if -1 in cluster_assignement else 0)
 
-    return n_clusters_, cluster, cluster_assignement
+    result = {}
+
+    db_score = davies_bouldin_score(distance_matrix, cluster_assignement)
+    result["Davies bouldin"] = db_score
+    silhouette = silhouette_score(distance_matrix, cluster_assignement)
+    result["Silhouette"] = silhouette
+    result["Number of clusters"] = len(np.unique(cluster_assignement))
+    result["Silhouette of each cluster"] = silhouette_clusters(distance_matrix, cluster_assignement)
+
+    return n_clusters_, cluster, cluster_assignement, result
 
 
 # *****************

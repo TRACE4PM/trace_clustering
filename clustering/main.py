@@ -138,7 +138,7 @@ def fss_meanshift(file_path, distance, min_support, min_length):
     # Create a new DataFrame with only the specified columns
     columns_to_keep = ['client_id', 'trace']
     trace_cols = replaced_traces[columns_to_keep]
-    nbr_clusters, cluster, cluster_assignement = meanshift(distance_matrix, trace_cols)
+    nbr_clusters, cluster, cluster_assignement, result = meanshift(distance_matrix, trace_cols)
 
     columns_to_keep = ['client_id', 'trace']
     trace_cols = replaced_traces[columns_to_keep]
@@ -149,7 +149,7 @@ def fss_meanshift(file_path, distance, min_support, min_length):
     save_clusters_fss(nbr_clusters, df, result_df)
     # get the number of traces in each cluster
     nb = number_traces("temp/logs/")
-    return nb
+    return result, nb
 
 def fss_euclidean_distance(file_path, nbr_clusters, min_support, min_length):
     """

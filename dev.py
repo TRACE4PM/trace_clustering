@@ -53,7 +53,7 @@ if __name__ == "__main__":
         elif clustering_algorithm == 'agglomerative':
             algorithm_params = ClusteringParams(nbr_clusters=3, linkage='complete', distance = 'hamming')
 
-    print(feature_based_clustering(file_path, clustering_algorithm, algorithm_params, 80, 0))
+    print(fss_meanshift(file_path, algorithm_params.distance,  80, 0))
 
     print("temps FSS + clustering")
     print("--- %s seconds ---" % (time.time() - start_time))
