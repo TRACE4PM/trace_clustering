@@ -29,4 +29,4 @@ class ClusteringParams(BaseModel):
     min_samples: Optional[int] = None
     nbr_clusters: Optional[int] = None
     linkage: Optional[str] = None
-
+    distance : Optional[str] = None

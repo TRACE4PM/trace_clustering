@@ -88,10 +88,11 @@ def number_traces(path):
         traces = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
         nb_traces["Cluster n"].append(i)  # Append cluster number to list
         data = np.array(traces['trace'])
-        # print(np.unique(data), '\n')
-        print("file nuber", files_to_process[i])
-        print(traces)
-        nb_traces["Number of traces"].append(len(traces))  # Append number of traces to list
+        unique_traces = np.unique(data)
+        print(unique_traces, '\n')
+        # print("file nuber", files_to_process[i])
+        # print(traces)
+        nb_traces["Number of traces"].append(len(unique_traces))  # Append number of traces to list
 
     return nb_traces
 
@@ -110,6 +111,5 @@ def save_clusters_fss(nbr_clusters,df, result_df):
     for cluster_id in range(nbr_clusters):
         cluster_indices = result_df[result_df['cluster_id'] == cluster_id].index
         cluster_traces = df.iloc[cluster_indices][['client_id', 'action', 'timestamp']]
-
         cluster_traces['timestamp'] = pd.to_datetime(cluster_traces['timestamp'], format='%d/%m/%y, %H:%M',utc=True)
         cluster_traces.to_csv(f'temp/logs/cluster_log_{cluster_id}.csv', sep=';', index=False)

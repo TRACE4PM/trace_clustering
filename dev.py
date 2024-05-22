@@ -3,7 +3,7 @@ from clustering.models.cluster_params import ClusteringParams
 import time
 
 # file_path = "/home/ania/Desktop/trace_clustering/services/clustering/test/result_res10k.csv"
-file_path = "/home/ania/Desktop/trace_clustering/services/clustering/test/lasagna.csv"
+file_path = "/home/ania/Desktop/trace_clustering/services/clustering/test/loop.csv"
 # file_path = "/home/ania/Desktop/trace_clustering/services/clustering/test/simulated_data.csv"
 
 if __name__ == "__main__":
@@ -26,14 +26,14 @@ if __name__ == "__main__":
 
     # ****************** test feature based with vector representations *****************
 
-    # clustering_algorithm = "dbscan"
-    # vector_rep = "binary representation"
+    # clustering_algorithm = "agglomerative"
+    # vector_rep = "frequency representation"
     # if clustering_algorithm not in ['dbscan', 'agglomerative']:
     #     print("Invalid clustering algorithm.")
     # else:
     #
     #     if clustering_algorithm == 'dbscan':
-    #         algorithm_params = ClusteringParams(epsilon=0.2, min_samples=2, distance = 'jaccard')
+    #         algorithm_params = ClusteringParams(epsilon=0.1, min_samples=2, distance = 'cosine')
     #     elif clustering_algorithm == 'agglomerative':
     #         algorithm_params = ClusteringParams(nbr_clusters=3, linkage='single', distance = 'cosine')
     #
@@ -42,18 +42,18 @@ if __name__ == "__main__":
 
     # ****************** feature based test *****************
 
-    #
-    clustering_algorithm = "agglomerative"
+
+    clustering_algorithm = "dbscan"
     if clustering_algorithm not in ['dbscan', 'agglomerative']:
         print("Invalid clustering algorithm.")
     else:
 
         if clustering_algorithm == 'dbscan':
-            algorithm_params = ClusteringParams(epsilon=0.5, min_samples=2, distance = 'jaccard')
+            algorithm_params = ClusteringParams(epsilon=0.3, min_samples=5, distance = 'jaccard')
         elif clustering_algorithm == 'agglomerative':
             algorithm_params = ClusteringParams(nbr_clusters=3, linkage='complete', distance = 'hamming')
 
-    print(fss_euclidean_distance(file_path, 3, 80, 0))
+    print(feature_based_clustering(file_path, clustering_algorithm, algorithm_params, 80, 0))
 
     print("temps FSS + clustering")
     print("--- %s seconds ---" % (time.time() - start_time))

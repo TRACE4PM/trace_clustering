@@ -81,8 +81,6 @@ def vector_based_clustering(file_path, vector_representation, clustering_method,
     print(distance_matrix)
     # Clustering based on the method chosen by the user
     clusters, cluster_assignement, result = clustering(clustering_method, distance_matrix, params)
-    # Remove the previous files in the log directory before saving the new logs
-    empty_directory('temp/logs')
     # Saving the clusters on temp log files
     save_clusters(df, cluster_assignement, traces)
     nb = number_traces("temp/logs/")
@@ -108,14 +106,23 @@ def feature_based_clustering(file_path, clustering_method, params, min_support, 
 
     clusters, cluster_assignement, result = clustering(clustering_method, distance_matrix, params)
 
-    # Remove the previous files in the log directory before saving the new logs
-    empty_directory('temp/logs')
-    save_clusters(df, cluster_assignement, trace_cols)
+    labels_unique = np.unique(cluster_assignement)
+    nbr_clusters = len(labels_unique)
 
-    return result
+    columns_to_keep = ['client_id', 'trace']
+    trace_cols = replaced_traces[columns_to_keep]
+    list_clients = trace_cols['client_id']  # get a list of all the client ids
+    result_df = pd.DataFrame({'client_id': list_clients, 'cluster_id': cluster_assignement})
+
+    # Save traces of each cluster into separate CSV files
+    save_clusters_fss(nbr_clusters, df, result_df)
+    # get the number of traces in each cluster
+    nb = number_traces("temp/logs/")
+
+    return result, nb
 
 
-def fss_meanshift(file_path, params, min_support, min_length):
+def fss_meanshift(file_path, distance, min_support, min_length):
     """
         feature based clustering using FSS encoding, we choose the distance measure and the
      clustering algorithm is Meanshift
@@ -126,18 +133,23 @@ def fss_meanshift(file_path, params, min_support, min_length):
     trace_df['trace'] = trace_df['trace'].apply(lambda x: str(x))
 
     fss_encoded_vectors, replaced_traces = get_FSS_encoding(trace_df, 'trace', min_support, min_length)
-    distance_matrix = distanceMeasures(fss_encoded_vectors, params.distance)
+    distance_matrix = distanceMeasures(fss_encoded_vectors, distance)
 
     # Create a new DataFrame with only the specified columns
     columns_to_keep = ['client_id', 'trace']
     trace_cols = replaced_traces[columns_to_keep]
-    nbr_clusters, labels_ms, result_df, scores = meanshift(distance_matrix, trace_cols)
+    nbr_clusters, cluster, cluster_assignement = meanshift(distance_matrix, trace_cols)
+
+    columns_to_keep = ['client_id', 'trace']
+    trace_cols = replaced_traces[columns_to_keep]
+    list_clients = trace_cols['client_id']  # get a list of all the client ids
+    result_df = pd.DataFrame({'client_id': list_clients, 'cluster_id': cluster_assignement})
 
     # Save traces of each cluster into separate CSV files
     save_clusters_fss(nbr_clusters, df, result_df)
     # get the number of traces in each cluster
     nb = number_traces("temp/logs/")
-    return scores, nb
+    return nb
 
 def fss_euclidean_distance(file_path, nbr_clusters, min_support, min_length):
     """
