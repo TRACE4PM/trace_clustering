@@ -41,29 +41,30 @@ def save_clusters(log_df, clusters, traces):
 
 def clusters_to_logs(original_logs_df, cluster_id, cluster_info_df):
     """
-        Iterates over the traces of each client in the cluster and filters them depending on the original
-        log file, and saving them as log files to each cluster in a CSV format
-         """
+    Iterates over the traces of each client in the cluster and filters them depending on the original
+    log file, and saving them as log files to each cluster in a CSV format.
+    """
     file_path = f'temp/logs/cluster_log_{cluster_id}.csv'
 
-    # Iterate over cluster_info_df and create log files for each cluster
-    with open(file_path, 'w') as file:
+    with open(file_path, 'w', newline='') as file:
         writer = csv.writer(file, delimiter=";")
-        writer.writerow(['client_id', 'action', 'timestamp'])
+        writer.writerow(['client_id', 'action', 'timestamp', 'cluster_id'])
+
         for index, row in cluster_info_df.iterrows():
             client_ids = row['client_id']
             traces = row['traces']
             client_ids_list = client_ids.split(',')
+
             # Filter original logs for client_ids in the current cluster
             cluster_logs_df = original_logs_df[original_logs_df['client_id'].isin(client_ids_list)]
-            # Filter logs based on traces in the cluster
-            filtered_logs_df = pd.DataFrame(columns=['client_id', 'action', 'timestamp'])
-            filtered_logs_df['timestamp'] = pd.to_datetime(filtered_logs_df['timestamp'], format='%d/%m/%y, %H:%M',
-                                                           utc=True)
-            filtered_logs_df = pd.concat([filtered_logs_df, cluster_logs_df[cluster_logs_df['action'].isin(traces)]],
-                                         ignore_index=True)
 
-            # Write the cluster logs to a CSV file
+            # Filter logs based on traces in the cluster
+            filtered_logs_df = cluster_logs_df[cluster_logs_df['action'].isin(traces)].copy()
+
+            # Add cluster_id column
+            filtered_logs_df['cluster_id'] = cluster_id
+
+            # Write the filtered logs to the CSV file
             filtered_logs_df.to_csv(file, sep=';', index=False, header=False, mode='a')
 
 
@@ -71,31 +72,26 @@ def number_traces(path):
     """
     calculates the number of traces in the log files of each cluster
     """
-    files_to_process = []
-    nb_traces = []
-    # opens the files named cluster_log where the logs are stored
+    nb_traces = {"Cluster n": [], "Number of traces": [],
+                 "Number unique traces": []}  # Initialize dictionary to store cluster info
     for filename in os.listdir(path):
         if filename.startswith("cluster_log_"):
+            cluster_num = int(filename.split("_")[2].split(".")[0])  # Extract cluster number from filename
             file_path = os.path.join(path, filename)
-            with open(file_path, 'rb') as f:
-                files_to_process.append(file_path)
-    # iterating over each file and grouping the actions of each client
-    nb_traces = {"Cluster n": [], "Number of traces": []}  # Initialize dictionary to store cluster info
-    nb_clusters = len(files_to_process)
-    for i in range(nb_clusters):
-        df = pd.read_csv(files_to_process[i], sep=";")
-        # Group by client_id and aggregate actions into lists
-        traces = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
-        nb_traces["Cluster n"].append(i)  # Append cluster number to list
-        data = np.array(traces['trace'])
-        unique_traces = np.unique(data)
-        print(unique_traces, '\n')
-        # print("file nuber", files_to_process[i])
-        # print(traces)
-        nb_traces["Number of traces"].append(len(unique_traces))  # Append number of traces to list
+            df = pd.read_csv(file_path, sep=";")
+            # Group by client_id and aggregate actions into lists
+            traces = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
+            data = np.array(traces['trace'])
+            unique_traces = np.unique(data)
+            nb_traces["Cluster n"].append(cluster_num)  # Append cluster number
+            nb_traces["Number of traces"].append(len(data))  # Append number of traces
+            nb_traces["Number unique traces"].append(len(unique_traces))
 
-    return nb_traces
+    # Sort based on cluster ID
+    sorted_indices = np.argsort(nb_traces["Cluster n"])
+    sorted_nb_traces = {key: [nb_traces[key][i] for i in sorted_indices] for key in nb_traces}
 
+    return sorted_nb_traces
 
 def empty_directory(directory_path):
     # Remove the files already existing a directory
@@ -112,4 +108,5 @@ def save_clusters_fss(nbr_clusters,df, result_df):
         cluster_indices = result_df[result_df['cluster_id'] == cluster_id].index
         cluster_traces = df.iloc[cluster_indices][['client_id', 'action', 'timestamp']]
         cluster_traces['timestamp'] = pd.to_datetime(cluster_traces['timestamp'], format='%d/%m/%y, %H:%M',utc=True)
+        cluster_traces['cluster_id'] = cluster_id
         cluster_traces.to_csv(f'temp/logs/cluster_log_{cluster_id}.csv', sep=';', index=False)
