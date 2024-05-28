@@ -69,15 +69,24 @@ def clustering(clustering_method, distance_matrix, params):
         clusters, cluster_assignement = meanshift(distance_matrix, params)
 
     # Evaluating the clusters
-    db_score = davies_bouldin_score(distance_matrix, cluster_assignement)
-    result["Davies bouldin"] = db_score
-    silhouette = silhouette_score(distance_matrix, cluster_assignement)
+    mask = cluster_assignement != -1
+    filtered_distance_matrix = distance_matrix[mask][:, mask]
+    filtered_cluster_assignement = cluster_assignement[mask]
+
+    if len(np.unique(filtered_cluster_assignement)) > 1:  # Ensure at least two clusters for evaluation
+        # Evaluating the clusters without outliers
+        db_score = davies_bouldin_score(filtered_distance_matrix, filtered_cluster_assignement)
+        silhouette = silhouette_score(filtered_distance_matrix, filtered_cluster_assignement)
+    else:
+        db_score = float('nan')  # Not enough clusters to evaluate
+        silhouette = float('nan')  # Not enough clusters to evaluate
+
+    result["Davies Bouldin"] = db_score
     result["Silhouette"] = silhouette
-    result["Number of clusters"] = len(np.unique(cluster_assignement))
-    result["Silhouette of each cluster"] = silhouette_clusters(distance_matrix, cluster_assignement)
+    result["Number of clusters"] = len(np.unique(filtered_cluster_assignement))
+    result["Silhouette of each cluster"] = silhouette_clusters(filtered_distance_matrix, filtered_cluster_assignement)
 
     return clusters, cluster_assignement, result
-
 
 #
 # **********************
