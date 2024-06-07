@@ -1,3 +1,5 @@
+from collections import Counter
+
 import pandas as pd
 import numpy as np
 from sklearn.cluster import AgglomerativeClustering, DBSCAN, MeanShift, estimate_bandwidth
@@ -38,7 +40,14 @@ def meanshift(distance_matrix, traces_df):
     # Number of clusters in labels, ignoring noise if present.
     n_clusters_ = len(set(cluster_assignement)) - (1 if -1 in cluster_assignement else 0)
 
+    element_counts = Counter(cluster_assignement)
+    unique_elements = element_counts.keys()
+    occurrences = element_counts.values()
+    # Print unique values and their occurrences
+    for element, count in zip(unique_elements, occurrences):
+        print(f"Cluster: {element}, Number of traces: {count}")
     result = {}
+    # return cluster_assignement
 
     db_score = davies_bouldin_score(distance_matrix, cluster_assignement)
     result["Davies bouldin"] = db_score
@@ -56,6 +65,7 @@ def meanshift(distance_matrix, traces_df):
 
 def clustering(clustering_method, distance_matrix, params):
     result = {}
+    distance_matrix = np.array(distance_matrix)
     if clustering_method.lower() == "dbscan":
         clusters, cluster_assignement = dbscan_clust(distance_matrix, params)
 
@@ -64,28 +74,26 @@ def clustering(clustering_method, distance_matrix, params):
 
     elif clustering_method.lower() == "agglomerative_ward":
         clusters, cluster_assignement = agglomerative_ward(distance_matrix, params)
-
     elif clustering_method.lower() == "meanshift":
         clusters, cluster_assignement = meanshift(distance_matrix, params)
 
     # Evaluating the clusters
     mask = cluster_assignement != -1
-    filtered_distance_matrix = distance_matrix[mask][:, mask]
-    filtered_cluster_assignement = cluster_assignement[mask]
+    filtered_distance_matrix = distance_matrix[np.ix_(mask, mask)]
+    filtered_cluster_assignment = cluster_assignement[mask]
 
-    if len(np.unique(filtered_cluster_assignement)) > 1:  # Ensure at least two clusters for evaluation
+    if len(np.unique(filtered_cluster_assignment)) > 1:  # Ensure at least two clusters for evaluation
         # Evaluating the clusters without outliers
-        db_score = davies_bouldin_score(filtered_distance_matrix, filtered_cluster_assignement)
-        silhouette = silhouette_score(filtered_distance_matrix, filtered_cluster_assignement)
+        db_score = davies_bouldin_score(filtered_distance_matrix, filtered_cluster_assignment)
+        silhouette = silhouette_score(filtered_distance_matrix, filtered_cluster_assignment)
     else:
         db_score = float('nan')  # Not enough clusters to evaluate
         silhouette = float('nan')  # Not enough clusters to evaluate
 
     result["Davies Bouldin"] = db_score
     result["Silhouette"] = silhouette
-    result["Number of clusters"] = len(np.unique(filtered_cluster_assignement))
-    result["Silhouette of each cluster"] = silhouette_clusters(filtered_distance_matrix, filtered_cluster_assignement)
-
+    result["Number of clusters"] = len(np.unique(filtered_cluster_assignment))
+    result["Silhouette of each cluster"] = silhouette_clusters(filtered_distance_matrix, filtered_cluster_assignment)
     return clusters, cluster_assignement, result
 
 #
@@ -94,4 +102,35 @@ def clustering(clustering_method, distance_matrix, params):
 def agglomerative_ward(data, nbr_clusters):
     cluster = AgglomerativeClustering(n_clusters=nbr_clusters, linkage='ward', metric='euclidean')
     cluster_assignments = cluster.fit_predict(data)
+    print(f"The silhouette score for {nbr_clusters} clusters using 'ward' linkage is: ",
+          silhouette_score(X=data, labels=cluster.labels_, metric='euclidean'))
+
+    print(f"The davies bouldin score for {nbr_clusters} clusters using 'ward' linkage is: ",
+          davies_bouldin_score(data, cluster.labels_))
     return cluster, cluster_assignments
+
+
+def applyHAC(linkage, num_of_clusters, metric, data):
+    agglomerative = AgglomerativeClustering(n_clusters=num_of_clusters, metric=metric, linkage=linkage)
+    # Fit the model
+    cluster_labels = agglomerative.fit_predict(data)
+    print(f"The silhouette score for {num_of_clusters} clusters using {linkage} linkage is: ",
+          silhouette_score(X=data, labels=agglomerative.labels_, metric=metric))
+
+    print(f"The davies bouldin score for {num_of_clusters} clusters using {linkage} linkage is: ",
+          davies_bouldin_score(data, agglomerative.labels_))
+    # Count occurrences of each element in the list
+    # if this line poses an error use instead the following commented lines
+    element_counts = Counter(cluster_labels)
+    # element_counts = Counter(list(cluster_labels_)
+    # unique_elements = list(element_counts.keys())
+    # occurrences = list(element_counts.values())
+
+    # Get unique values and their occurrences
+    unique_elements = element_counts.keys()
+    occurrences = element_counts.values()
+    # Print unique values and their occurrences
+    for element, count in zip(unique_elements, occurrences):
+        print(f"Cluster: {element}, Number of traces: {count}")
+
+    return cluster_labels

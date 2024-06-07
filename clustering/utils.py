@@ -2,7 +2,9 @@ import csv
 import numpy as np
 import os
 import pandas as pd
-from sklearn.metrics import silhouette_samples
+import matplotlib.cm as cm
+from matplotlib import pyplot as plt
+from sklearn.metrics import silhouette_samples, silhouette_score
 
 
 def silhouette_clusters(distance_matrix, cluster_assignement):
@@ -107,6 +109,68 @@ def save_clusters_fss(nbr_clusters,df, result_df):
     for cluster_id in range(nbr_clusters):
         cluster_indices = result_df[result_df['cluster_id'] == cluster_id].index
         cluster_traces = df.iloc[cluster_indices][['client_id', 'action', 'timestamp']]
-        cluster_traces['timestamp'] = pd.to_datetime(cluster_traces['timestamp'], format='%d/%m/%y, %H:%M',utc=True)
+        cluster_traces['timestamp'] = pd.to_datetime(cluster_traces['timestamp'],format='%Y-%m-%d %H:%M:%S',utc=True)
         cluster_traces['cluster_id'] = cluster_id
         cluster_traces.to_csv(f'temp/logs/cluster_log_{cluster_id}.csv', sep=';', index=False)
+
+
+''' 
+This function takes the data used for clustering, the cluster labels resulting from clustering and the num of clusters used 
+it returns the silhouette score of each cluster and plots the silhouette analysis graph
+'''
+
+
+# Compute silhouette scores for each data point
+def silhouetteAnalysis(data, cluster_labels, n_clusters, metric='euclidean'):
+    silhouette_avg = silhouette_score(X=data, labels=cluster_labels, metric=metric)
+    sample_silhouette_values = silhouette_samples(X=data, labels=cluster_labels, metric=metric)
+    # Assign unique labels within each cluster
+    unique_clusters = set(cluster_labels)
+    for i, cluster in enumerate(unique_clusters):
+        cluster_indices = np.where(cluster_labels == cluster)[0]
+        cluster_labels[cluster_indices] = i
+
+    # Compute the silhouette score for each cluster
+    unique_clusters = set(cluster_labels)
+    for cluster in unique_clusters:
+        cluster_indices = np.where(cluster_labels == cluster)[0]  # Indices of data points in the cluster
+        if len(cluster_indices) > 1:  # Check if the cluster has more than one data point
+            cluster_silhouette_scores = sample_silhouette_values[cluster_indices]
+            cluster_avg_silhouette = np.mean(cluster_silhouette_scores)
+            print(f"Average Silhouette score for Cluster {cluster}: {cluster_avg_silhouette}")
+        else:
+            print(f"Cluster {cluster} has fewer than 2 data points. Silhouette score cannot be calculated.")
+
+    # Plot silhouette analysis
+    fig, ax = plt.subplots()
+    y_lower = 10
+
+    for i in range(n_clusters):
+        # Aggregate the silhouette scores for samples belonging to cluster i and sort them
+        ith_cluster_silhouette_values = sample_silhouette_values[cluster_labels == i]
+        ith_cluster_silhouette_values.sort()
+
+        size_cluster_i = ith_cluster_silhouette_values.shape[0]
+        y_upper = y_lower + size_cluster_i
+
+        color = cm.nipy_spectral(float(i) / n_clusters)
+        ax.fill_betweenx(np.arange(y_lower, y_upper),
+                         0, ith_cluster_silhouette_values,
+                         facecolor=color, edgecolor=color, alpha=0.7)
+
+        # Label the silhouette plots with their cluster numbers at the middle
+        ax.text(-0.05, y_lower + 0.5 * size_cluster_i, str(i))
+
+        # Compute the new y_lower for the next plot
+        y_lower = y_upper + 10  # 10 for the 0 samples
+
+    ax.set_xlabel("Silhouette coefficient values")
+    ax.set_ylabel("Cluster label")
+
+    # The vertical line for average silhouette score of all the values
+    ax.axvline(x=silhouette_avg, color="red", linestyle="--")
+    ax.set_yticks([])  # Clear the yaxis labels / ticks
+    ax.set_xticks([-0.1, 0, 0.2, 0.4, 0.6, 0.8, 1])
+
+    plt.title(f"Silhouette analysis for {n_clusters} clusters")
+    plt.show()

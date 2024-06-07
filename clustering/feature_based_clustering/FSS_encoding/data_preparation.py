@@ -161,7 +161,6 @@ def matrix_direct_succession(tracedf, actionName):
 
     return df_activity_count, footprint_matrix
 
-
 '''
 An Fss value  of an  FSS pattern is calculated as follows: 
 for each 2 consecutive events in the FSS compute 
@@ -233,7 +232,12 @@ def replace_fss_in_trace(tracedf, actionName, prefixSpanRes, outputPath=False):
 
     tracedf[actionName+'_FSSEncoded'] = replaced_traces
     tracedf[actionName+'_FSSEncodedLen'] = traces_len
+    #add padding to the lists
+    max_length = np.max(tracedf[actionName+'_FSSEncodedLen'])
+    # Pad each list with -1 to make them all the same length
+    #if the following line poses an error, use the alternative statement
+    tracedf[actionName+'_FSSEncoded_Padded'] = [lst + [-1] * (max_length - len(lst)) for lst in list(tracedf[actionName+'_FSSEncoded'])]
+    #tracedf[actionName+'_FSSEncoded_Padded'] = [lst + [-1] * (max_length - len(lst)) for lst in list(tracedf[actionName+'_FSSEncoded'].apply(ast.literal_eval))]
     if(outputPath):
         tracedf.to_csv(outputPath, index=False)
     return tracedf
-

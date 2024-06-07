@@ -69,13 +69,13 @@ def get_FSS_encoding(tracedf, trace_col, min_support_percentage, min_length):
     filteredTraces = filterTraces(tracedf, prefixSpanRes, trace_col)
     filteredTraces = filteredTraces[filteredTraces['hasOriginalPattern'] == 1]
     print('New Length of tracedf ', len(filteredTraces))
-    df_activity_count, footprint_matrix = matrix_direct_succession(filteredTraces, trace_col)
+    # now apply FSS on filtered traces using the computed prefixSpan result of patterns
+    df_activity_count, footprint_matrix = matrix_direct_succession(filteredTraces, 'SemanticTrace')
     prefixSpanRes = compute_fss_encoding(prefixSpanRes, df_activity_count, footprint_matrix)
-    replaced_trace = replace_fss_in_trace(filteredTraces, trace_col, prefixSpanRes)
+    replaced_trace = replace_fss_in_trace(filteredTraces, 'SemanticTrace', prefixSpanRes)
 
-    fss_encoded_vectors = same_length_vectors(replaced_trace['trace_FSSEncoded'])
-
-    return fss_encoded_vectors.to_list(), replaced_trace
+    # fss_encoded_vectors = list(replaced_trace['trace_FSSEncoded'])
+    return replaced_trace
 
 
 # ************ chosing the vector representation *********

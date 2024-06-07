@@ -1,13 +1,12 @@
 import numpy as np
 import pandas as pd
 import warnings
-from .clustering_methods.clustering_algorithms import clustering, meanshift, agglomerative_ward
+from .clustering_methods.clustering_algorithms import clustering, meanshift, applyHAC, agglomerative_ward
 from .distance.distance_measures import distanceMeasures
 from .distance.distance_measures import levenshtein
 from .feature_based_clustering.vector_representation import vectorRepresentation, get_FSS_encoding
 from .utils import save_clusters, save_clusters_fss
-from .utils import number_traces
-
+from .utils import number_traces, silhouetteAnalysis
 
 def trace_based_clustering(file_path, clustering_methode, params):
     """
@@ -89,6 +88,18 @@ def vector_based_clustering(file_path, vector_representation, clustering_method,
 def feature_based_clustering(file_path, clustering_method, params, min_support, min_length):
     """
         feature based clustering using fss encoding depending on the choice of the clustering method
+    Args:
+        file_path: log file in a csv format with the columns 'client_id', 'client_id', 'timestamp'
+        vector_representation : Binary Representation, frequency based representation, or Relative frequency
+        clustering_methode: dbscan or agglomerative clustering algorithms
+        params: parameters of each clustering algorithm
+            epsilon and min_samples => DBSCAN
+            n_cluster and linkage criteria => Agglomerative
+            distance : either Jaccard, Cosine, or Hamming distance
+    Returns:
+        Davis bouldin score
+        Number of clusters
+        Silhouette score of the clustering and for each cluster
     """
     df = pd.read_csv(file_path, sep=";")
     trace_df = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
@@ -125,52 +136,89 @@ def fss_meanshift(file_path, distance, min_support, min_length):
     """
         feature based clustering using FSS encoding, we choose the distance measure and the
      clustering algorithm is Meanshift
+    Args:
+        file_path: log file in a csv format with the columns 'client_id', 'client_id', 'timestamp'
+        vector_representation : Binary Representation, frequency based representation, or Relative frequency
+        clustering_methode: dbscan or agglomerative clustering algorithms
+        params: parameters of each clustering algorithm
+            epsilon and min_samples => DBSCAN
+            n_cluster and linkage criteria => Agglomerative
+            distance : either Jaccard, Cosine, or Hamming distance
+    Returns:
+        Davis bouldin score
+        Number of clusters
+        Silhouette score of the clustering and for each cluster
 
     """
     df = pd.read_csv(file_path, sep=";")
-    trace_df = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
-    trace_df['trace'] = trace_df['trace'].apply(lambda x: str(x))
+    trace_df = df.groupby("client_id")["action"].apply(list).reset_index(name='SemanticTrace')
+    trace_df['SemanticTrace'] = trace_df['SemanticTrace'].apply(lambda x: str(x))
 
-    fss_encoded_vectors, replaced_traces = get_FSS_encoding(trace_df, 'trace', min_support, min_length)
-    distance_matrix = distanceMeasures(fss_encoded_vectors, distance)
+    replaced_traces = get_FSS_encoding(trace_df, 'SemanticTrace', min_support, min_length)
+
+    # Convert the list of vectors to a numpy array
+    data = list(replaced_traces['SemanticTrace_FSSEncoded_Padded'])
+
+    # agglomerative clustering using ward linkage and euclidean distance
+    print("replaced ", replaced_traces)
+    distance_matrix = distanceMeasures(data, distance)
 
     # Create a new DataFrame with only the specified columns
-    columns_to_keep = ['client_id', 'trace']
+    columns_to_keep = ['client_id', 'SemanticTrace']
     trace_cols = replaced_traces[columns_to_keep]
     nbr_clusters, cluster, cluster_assignement, result = meanshift(distance_matrix, trace_cols)
 
-    columns_to_keep = ['client_id', 'trace']
-    trace_cols = replaced_traces[columns_to_keep]
     list_clients = trace_cols['client_id']  # get a list of all the client ids
     result_df = pd.DataFrame({'client_id': list_clients, 'cluster_id': cluster_assignement})
+
+    silhouetteAnalysis(data, cluster_assignement, nbr_clusters)
 
     # Save traces of each cluster into separate CSV files
     save_clusters_fss(nbr_clusters, df, result_df)
     # get the number of traces in each cluster
-    nb = number_traces("temp/logs/")
-    return result, nb
+    # nb = number_traces("temp/logs/")
+    return result
 
 def fss_euclidean_distance(file_path, nbr_clusters, min_support, min_length):
     """
         feature based clustering using fss encoding and without a distance measure
         using Agglomerative clustering with Ward linkage and Euclidean distance
+     Args:
+        file_path: log file in a csv format with the columns 'client_id', 'client_id', 'timestamp'
+        vector_representation : Binary Representation, frequency based representation, or Relative frequency
+        clustering_methode: dbscan or agglomerative clustering algorithms
+        params: parameters of each clustering algorithm
+            epsilon and min_samples => DBSCAN
+            n_cluster and linkage criteria => Agglomerative
+            distance : either Jaccard, Cosine, or Hamming distance
+    Returns:
+        Davis bouldin score
+        Number of clusters
+        Silhouette score of the clustering and for each cluster
     """
     df = pd.read_csv(file_path, sep=";")
-    trace_df = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
-    trace_df['trace'] = trace_df['trace'].apply(lambda x: str(x))
+    trace_df = df.groupby("client_id")["action"].apply(list).reset_index(name='SemanticTrace')
+    trace_df['SemanticTrace'] = trace_df['SemanticTrace'].apply(lambda x: str(x))
 
-    fss_encoded_vectors, replaced_traces = get_FSS_encoding(trace_df, 'trace', min_support, min_length)
+    replaced_traces = get_FSS_encoding(trace_df, 'SemanticTrace', min_support, min_length)
 
     # Convert the list of vectors to a numpy array
-    data = np.array(fss_encoded_vectors)
-    # agglomerative clustering using ward linkage and euclidean distance
-    cluster, cluster_assignement, result = clustering("agglomerative_ward",data, nbr_clusters)
+    data =list(replaced_traces['SemanticTrace_FSSEncoded_Padded'])
 
-    columns_to_keep = ['client_id', 'trace']
+    # agglomerative clustering using ward linkage and euclidean distance
+    print("replaced ",replaced_traces)
+
+    clusters, cluster_assignement, result= clustering("agglomerative_ward",data, nbr_clusters)
+    # replaced_traces['Cluster_Labels'] = fss_cluster_labels_hac
+
+    # cluster, cluster_assignement, result = clustering("agglomerative_ward",data, nbr_clusters)
+    #
+    columns_to_keep = ['client_id', 'SemanticTrace']
     trace_cols = replaced_traces[columns_to_keep]
 
     list_clients = trace_cols['client_id']  #get a list of all the client ids
     result_df = pd.DataFrame({'client_id': list_clients, 'cluster_id': cluster_assignement})
+    silhouetteAnalysis(data, cluster_assignement, nbr_clusters, 'euclidean')
 
     # Save traces of each cluster into separate CSV files
     save_clusters_fss(nbr_clusters,df, result_df)

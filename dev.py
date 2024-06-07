@@ -3,7 +3,7 @@ from clustering.models.cluster_params import ClusteringParams
 import time
 
 # file_path = "/home/ania/Desktop/trace_clustering/services/clustering/test/result_res10k.csv"
-file_path = "/home/ania/Desktop/trace_clustering/services/clustering/test/lasagna.csv"
+file_path = "/home/ania/Desktop/trace_clustering/notebooks/log_moodle_Hyphen.csv"
 # file_path = "/home/ania/Desktop/trace_clustering/services/clustering/test/simulated_data.csv"
 
 if __name__ == "__main__":
@@ -19,7 +19,7 @@ if __name__ == "__main__":
     #     if clustering_algorithm == 'dbscan':
     #         algorithm_params = ClusteringParams(epsilon=0.1, min_samples=2)
     #     elif clustering_algorithm == 'agglomerative':
-    #         algorithm_params = ClusteringParams(nbr_clusters=3, linkage='single')
+    #         algorithm_params = ClusteringParams(nbr_clusters=3, linkage='complete')
     #
     #     print(trace_based_clustering(file_path, clustering_algorithm, algorithm_params))
 
@@ -40,35 +40,13 @@ if __name__ == "__main__":
 
     #
     # ****************** test feature based FSS Encoding *****************
-    #
-    clustering_algorithm = "agglomerative"
-    vector_rep = "frequency representation"
 
-    if clustering_algorithm not in ['dbscan', 'agglomerative']:
-        print("Invalid clustering algorithm.")
-    else:
-
-        if clustering_algorithm == 'dbscan':
-            algorithm_params = ClusteringParams(epsilon=0.2, min_samples=5, distance = 'jaccard')
-        elif clustering_algorithm == 'agglomerative':
-            algorithm_params = ClusteringParams(nbr_clusters=3, linkage='single', distance = 'cosine')
-
-        print(fss_euclidean_distance(file_path, 2, 80, 2))
+    print(fss_euclidean_distance(file_path, 3, 99, 9))
 
     # ****************** feature based test *****************
 
-    #
-    # clustering_algorithm = "dbscan"
-    # if clustering_algorithm not in ['dbscan', 'agglomerative']:
-    #     print("Invalid clustering algorithm.")
-    # else:
-    #
-    #     if clustering_algorithm == 'dbscan':
-    #         algorithm_params = ClusteringParams(epsilon=0.3, min_samples=5, distance = 'jaccard')
-    #     elif clustering_algorithm == 'agglomerative':
-    #         algorithm_params = ClusteringParams(nbr_clusters=3, linkage='complete', distance = 'hamming')
-    #
-    # print(fss_meanshift(file_path, algorithm_params.distance,  80, 0))
+
+    # print(fss_meanshift(file_path, 'jaccard',  99, 9))
 
     print("temps FSS + clustering")
     print("--- %s seconds ---" % (time.time() - start_time))
