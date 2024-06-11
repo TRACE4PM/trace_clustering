@@ -4,6 +4,7 @@ import os
 import pandas as pd
 import matplotlib.cm as cm
 from matplotlib import pyplot as plt
+from scipy.cluster import hierarchy
 from sklearn.metrics import silhouette_samples, silhouette_score
 
 
@@ -136,41 +137,54 @@ def silhouetteAnalysis(data, cluster_labels, n_clusters, metric='euclidean'):
         cluster_indices = np.where(cluster_labels == cluster)[0]  # Indices of data points in the cluster
         if len(cluster_indices) > 1:  # Check if the cluster has more than one data point
             cluster_silhouette_scores = sample_silhouette_values[cluster_indices]
+
             cluster_avg_silhouette = np.mean(cluster_silhouette_scores)
             print(f"Average Silhouette score for Cluster {cluster}: {cluster_avg_silhouette}")
         else:
             print(f"Cluster {cluster} has fewer than 2 data points. Silhouette score cannot be calculated.")
 
     # Plot silhouette analysis
-    fig, ax = plt.subplots()
-    y_lower = 10
+    # fig, ax = plt.subplots()
+    # y_lower = 10
+    #
+    # for i in range(n_clusters):
+    #     # Aggregate the silhouette scores for samples belonging to cluster i and sort them
+    #     ith_cluster_silhouette_values = sample_silhouette_values[cluster_labels == i]
+    #     ith_cluster_silhouette_values.sort()
+    #
+    #     size_cluster_i = ith_cluster_silhouette_values.shape[0]
+    #     y_upper = y_lower + size_cluster_i
+    #
+    #     color = cm.nipy_spectral(float(i) / n_clusters)
+    #     ax.fill_betweenx(np.arange(y_lower, y_upper),
+    #                      0, ith_cluster_silhouette_values,
+    #                      facecolor=color, edgecolor=color, alpha=0.7)
+    #
+    #     # Label the silhouette plots with their cluster numbers at the middle
+    #     ax.text(-0.05, y_lower + 0.5 * size_cluster_i, str(i))
+    #
+    #     # Compute the new y_lower for the next plot
+    #     y_lower = y_upper + 10  # 10 for the 0 samples
+    #
+    # ax.set_xlabel("Silhouette coefficient values")
+    # ax.set_ylabel("Cluster label")
+    #
+    # # The vertical line for average silhouette score of all the values
+    # ax.axvline(x=silhouette_avg, color="red", linestyle="--")
+    # ax.set_yticks([])  # Clear the yaxis labels / ticks
+    # ax.set_xticks([-0.1, 0, 0.2, 0.4, 0.6, 0.8, 1])
+    #
+    # plt.title(f"Silhouette analysis for {n_clusters} clusters")
+    # plt.show()
 
-    for i in range(n_clusters):
-        # Aggregate the silhouette scores for samples belonging to cluster i and sort them
-        ith_cluster_silhouette_values = sample_silhouette_values[cluster_labels == i]
-        ith_cluster_silhouette_values.sort()
-
-        size_cluster_i = ith_cluster_silhouette_values.shape[0]
-        y_upper = y_lower + size_cluster_i
-
-        color = cm.nipy_spectral(float(i) / n_clusters)
-        ax.fill_betweenx(np.arange(y_lower, y_upper),
-                         0, ith_cluster_silhouette_values,
-                         facecolor=color, edgecolor=color, alpha=0.7)
-
-        # Label the silhouette plots with their cluster numbers at the middle
-        ax.text(-0.05, y_lower + 0.5 * size_cluster_i, str(i))
-
-        # Compute the new y_lower for the next plot
-        y_lower = y_upper + 10  # 10 for the 0 samples
-
-    ax.set_xlabel("Silhouette coefficient values")
-    ax.set_ylabel("Cluster label")
-
-    # The vertical line for average silhouette score of all the values
-    ax.axvline(x=silhouette_avg, color="red", linestyle="--")
-    ax.set_yticks([])  # Clear the yaxis labels / ticks
-    ax.set_xticks([-0.1, 0, 0.2, 0.4, 0.6, 0.8, 1])
-
-    plt.title(f"Silhouette analysis for {n_clusters} clusters")
+def drawDendrogram(data, method, title='', saveFlag=False, outputDir=False):
+    # Plot the dendrogram
+    plt.figure(figsize=(8, 6))
+    dendrogram = hierarchy.dendrogram(hierarchy.linkage(data, method=method))
+    plt.xlabel('Data Points')
+    plt.ylabel(f'Clustering with {method} linkage')
+    plt.title('Dendrogram ' + title)
     plt.show()
+    if (saveFlag):
+        # Save the dendrogram to a file (change 'dendrogram.png' to your desired filename)
+        plt.savefig(os.path.join(outputDir, 'Dendrogram.png'))

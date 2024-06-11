@@ -2,9 +2,9 @@ from collections import Counter
 
 import pandas as pd
 import numpy as np
-from sklearn.cluster import AgglomerativeClustering, DBSCAN, MeanShift, estimate_bandwidth
+from sklearn.cluster import AgglomerativeClustering, DBSCAN, MeanShift, estimate_bandwidth, KMeans
 from sklearn.metrics import davies_bouldin_score, silhouette_score
-from ..utils import silhouette_clusters
+from ..utils import silhouette_clusters, silhouetteAnalysis
 
 
 def dbscan_clust(distance_matrix, params):
@@ -72,8 +72,6 @@ def clustering(clustering_method, distance_matrix, params):
     elif clustering_method.lower() == "agglomerative":
         clusters, cluster_assignement = agglomerative_clust(distance_matrix, params)
 
-    elif clustering_method.lower() == "agglomerative_ward":
-        clusters, cluster_assignement = agglomerative_ward(distance_matrix, params)
     elif clustering_method.lower() == "meanshift":
         clusters, cluster_assignement = meanshift(distance_matrix, params)
 
@@ -107,6 +105,8 @@ def agglomerative_ward(data, nbr_clusters):
 
     print(f"The davies bouldin score for {nbr_clusters} clusters using 'ward' linkage is: ",
           davies_bouldin_score(data, cluster.labels_))
+
+
     return cluster, cluster_assignments
 
 

@@ -5,7 +5,7 @@ from .clustering_methods.clustering_algorithms import clustering, meanshift, app
 from .distance.distance_measures import distanceMeasures
 from .distance.distance_measures import levenshtein
 from .feature_based_clustering.vector_representation import vectorRepresentation, get_FSS_encoding
-from .utils import save_clusters, save_clusters_fss
+from .utils import save_clusters, save_clusters_fss, drawDendrogram
 from .utils import number_traces, silhouetteAnalysis
 
 def trace_based_clustering(file_path, clustering_methode, params):
@@ -37,7 +37,7 @@ def trace_based_clustering(file_path, clustering_methode, params):
     # calculated the normalized levenshtein distance matrix for the traces
     distance_matrix = levenshtein(traces['trace'].array)
     print("dist matrix", distance_matrix)
-
+    drawDendrogram(distance_matrix, params.linkage)
     # Clustering based on the distance matrix and the chosen method
     clusters, cluster_assignement, result = clustering(clustering_methode, distance_matrix, params)
     # Remove the previous files in the log directory before saving the new logs
@@ -75,6 +75,7 @@ def vector_based_clustering(file_path, vector_representation, clustering_method,
     print(vectors)
     # generate the distance matrix using the distance measure the user choses
     distance_matrix = distanceMeasures(vectors, params.distance)
+    drawDendrogram(distance_matrix, params.linkage)
 
     print(distance_matrix)
     # Clustering based on the method chosen by the user
@@ -114,6 +115,7 @@ def feature_based_clustering(file_path, clustering_method, params, min_support, 
     #   fix levenshtein distances, it takes too much time (96seconds) compared to the other distance measures (1s)
     # distance_matrix = levenshtein(fss_encoded_vectors)
 
+    drawDendrogram(distance_matrix, params.linkage )
     clusters, cluster_assignement, result = clustering(clustering_method, distance_matrix, params)
 
     labels_unique = np.unique(cluster_assignement)
@@ -205,10 +207,9 @@ def fss_euclidean_distance(file_path, nbr_clusters, min_support, min_length):
     # Convert the list of vectors to a numpy array
     data =list(replaced_traces['SemanticTrace_FSSEncoded_Padded'])
 
-    # agglomerative clustering using ward linkage and euclidean distance
-    print("replaced ",replaced_traces)
+    drawDendrogram(data, 'ward', 'Using Improved FSS on all traces')
 
-    clusters, cluster_assignement, result= clustering("agglomerative_ward",data, nbr_clusters)
+    clusters, cluster_assignement= agglomerative_ward(data, nbr_clusters)
     # replaced_traces['Cluster_Labels'] = fss_cluster_labels_hac
 
     # cluster, cluster_assignement, result = clustering("agglomerative_ward",data, nbr_clusters)
@@ -223,4 +224,5 @@ def fss_euclidean_distance(file_path, nbr_clusters, min_support, min_length):
     # Save traces of each cluster into separate CSV files
     save_clusters_fss(nbr_clusters,df, result_df)
     nb = number_traces("temp/logs/")  # get the number of traces in each cluster
-    return result, nb
+    return nb
+
