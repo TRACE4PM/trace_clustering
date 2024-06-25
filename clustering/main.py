@@ -31,15 +31,18 @@ def trace_based_clustering(file_path, clustering_methode, params):
     df = pd.read_csv(file_path, sep=";")
     df['timestamp'] = pd.to_datetime(df['timestamp'])
 
+    df = df.sort_values(by='timestamp', ascending=True)
+    # print(df.head())
     # generating the traces of each user by grouping their actions
     traces = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
-
+    # print(traces[traces['client_id'] == "mid41"]['trace'].values)
     # calculated the normalized levenshtein distance matrix for the traces
     distance_matrix = levenshtein(traces['trace'].array)
     print("dist matrix", distance_matrix)
-    drawDendrogram(distance_matrix, params.linkage)
+    # drawDendrogram(distance_matrix, params.linkage)
     # Clustering based on the distance matrix and the chosen method
     clusters, cluster_assignement, result = clustering(clustering_methode, distance_matrix, params)
+    print(clusters, cluster_assignement)
     # Remove the previous files in the log directory before saving the new logs
     save_clusters(df, cluster_assignement, traces)
     nb = number_traces('temp/logs')
@@ -67,6 +70,8 @@ def vector_based_clustering(file_path, vector_representation, clustering_method,
     df = pd.read_csv(file_path, sep=";")
 
     df['timestamp'] = pd.to_datetime(df['timestamp'])
+    df = df.sort_values(by='timestamp', ascending=True)
+    print(df.head())
     print(vector_representation, clustering_method, params.distance)
     traces = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
 
@@ -75,7 +80,7 @@ def vector_based_clustering(file_path, vector_representation, clustering_method,
     print(vectors)
     # generate the distance matrix using the distance measure the user choses
     distance_matrix = distanceMeasures(vectors, params.distance)
-    drawDendrogram(distance_matrix, params.linkage)
+    # drawDendrogram(distance_matrix, params.linkage)
 
     print(distance_matrix)
     # Clustering based on the method chosen by the user
@@ -103,24 +108,21 @@ def feature_based_clustering(file_path, clustering_method, params, min_support, 
         Silhouette score of the clustering and for each cluster
     """
     df = pd.read_csv(file_path, sep=";")
+    df = df.sort_values(by='timestamp', ascending=True)
     trace_df = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
     trace_df['trace'] = trace_df['trace'].apply(lambda x: str(x))
     fss_encoded_vectors, replaced_traces = get_FSS_encoding(trace_df, 'trace', min_support, min_length)
     print("replaces traces ", replaced_traces)
     columns_to_keep =['client_id', 'trace']
-    # Create a new DataFrame with only the specified columns
-    trace_cols= replaced_traces[columns_to_keep]
-    distance_matrix = distanceMeasures(fss_encoded_vectors, params.distance)
-    # TODO :
-    #   fix levenshtein distances, it takes too much time (96seconds) compared to the other distance measures (1s)
-    # distance_matrix = levenshtein(fss_encoded_vectors)
 
-    drawDendrogram(distance_matrix, params.linkage )
+    distance_matrix = distanceMeasures(fss_encoded_vectors, params.distance)
+
+    # drawDendrogram(distance_matrix, params.linkage )
     clusters, cluster_assignement, result = clustering(clustering_method, distance_matrix, params)
 
     labels_unique = np.unique(cluster_assignement)
     nbr_clusters = len(labels_unique)
-
+    # Create a new DataFrame with only the specified columns
     columns_to_keep = ['client_id', 'trace']
     trace_cols = replaced_traces[columns_to_keep]
     list_clients = trace_cols['client_id']  # get a list of all the client ids
@@ -153,6 +155,7 @@ def fss_meanshift(file_path, distance, min_support, min_length):
 
     """
     df = pd.read_csv(file_path, sep=";")
+    df = df.sort_values(by='timestamp', ascending=True)
     trace_df = df.groupby("client_id")["action"].apply(list).reset_index(name='SemanticTrace')
     trace_df['SemanticTrace'] = trace_df['SemanticTrace'].apply(lambda x: str(x))
 
@@ -199,6 +202,7 @@ def fss_euclidean_distance(file_path, nbr_clusters, min_support, min_length):
         Silhouette score of the clustering and for each cluster
     """
     df = pd.read_csv(file_path, sep=";")
+    df = df.sort_values(by='timestamp', ascending=True)
     trace_df = df.groupby("client_id")["action"].apply(list).reset_index(name='SemanticTrace')
     trace_df['SemanticTrace'] = trace_df['SemanticTrace'].apply(lambda x: str(x))
 
@@ -207,7 +211,7 @@ def fss_euclidean_distance(file_path, nbr_clusters, min_support, min_length):
     # Convert the list of vectors to a numpy array
     data =list(replaced_traces['SemanticTrace_FSSEncoded_Padded'])
 
-    drawDendrogram(data, 'ward', 'Using Improved FSS on all traces')
+    # drawDendrogram(data, 'ward', 'Using Improved FSS on all traces')
 
     clusters, cluster_assignement= agglomerative_ward(data, nbr_clusters)
     # replaced_traces['Cluster_Labels'] = fss_cluster_labels_hac

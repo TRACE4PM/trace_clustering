@@ -6,6 +6,7 @@ import matplotlib.cm as cm
 from matplotlib import pyplot as plt
 from scipy.cluster import hierarchy
 from sklearn.metrics import silhouette_samples, silhouette_score
+from scipy.spatial.distance import squareform
 
 
 def silhouette_clusters(distance_matrix, cluster_assignement):
@@ -110,7 +111,7 @@ def save_clusters_fss(nbr_clusters,df, result_df):
     for cluster_id in range(nbr_clusters):
         cluster_indices = result_df[result_df['cluster_id'] == cluster_id].index
         cluster_traces = df.iloc[cluster_indices][['client_id', 'action', 'timestamp']]
-        cluster_traces['timestamp'] = pd.to_datetime(cluster_traces['timestamp'],format='%Y-%m-%d %H:%M:%S',utc=True)
+        cluster_traces['timestamp'] = pd.to_datetime(cluster_traces['timestamp'],format='%Y-%m-%d %H:%M:%S')
         cluster_traces['cluster_id'] = cluster_id
         cluster_traces.to_csv(f'temp/logs/cluster_log_{cluster_id}.csv', sep=';', index=False)
 
