@@ -128,6 +128,13 @@ def silhouetteAnalysis(data, cluster_labels, n_clusters, metric='euclidean'):
     sample_silhouette_values = silhouette_samples(X=data, labels=cluster_labels, metric=metric)
     # Assign unique labels within each cluster
     unique_clusters = set(cluster_labels)
+    result = {
+        "Silhouette of each cluster": {},
+        "Silhouette": silhouette_avg,
+        "Number of clusters": n_clusters,
+        "Average Silhouette": silhouette_avg
+    }
+
     for i, cluster in enumerate(unique_clusters):
         cluster_indices = np.where(cluster_labels == cluster)[0]
         cluster_labels[cluster_indices] = i
@@ -144,6 +151,7 @@ def silhouetteAnalysis(data, cluster_labels, n_clusters, metric='euclidean'):
         else:
             print(f"Cluster {cluster} has fewer than 2 data points. Silhouette score cannot be calculated.")
 
+    return result
     # Plot silhouette analysis
     # fig, ax = plt.subplots()
     # y_lower = 10

@@ -63,21 +63,24 @@ def meanshift(distance_matrix, traces_df):
 
 # clustering method depends on the choice of the user
 
-def clustering(clustering_method, distance_matrix, params):
+def clustering(clustering_method, data, params):
+    print(clustering_method, params )
     result = {}
-    distance_matrix = np.array(distance_matrix)
+    data = np.array(data)
     if clustering_method.lower() == "dbscan":
-        clusters, cluster_assignement = dbscan_clust(distance_matrix, params)
-
+        clusters, cluster_assignement = dbscan_clust(data, params)
     elif clustering_method.lower() == "agglomerative":
-        clusters, cluster_assignement = agglomerative_clust(distance_matrix, params)
+        clusters, cluster_assignement = agglomerative_clust(data, params)
+    # # elif clustering_method.lower() == "meanshift":
+    # #     clusters, cluster_assignement = meanshift(data, params)
+    # elif clustering_method.lower() == "agglomerative_euclidean":
+    #     print("euclidean disttttt")
+    #     clusters, cluster_assignement = agglomerative_euclidean(data, params)
 
-    elif clustering_method.lower() == "meanshift":
-        clusters, cluster_assignement = meanshift(distance_matrix, params)
-
+    print(clusters, cluster_assignement)
     # Evaluating the clusters
     mask = cluster_assignement != -1
-    filtered_distance_matrix = distance_matrix[np.ix_(mask, mask)]
+    filtered_distance_matrix = data[np.ix_(mask, mask)]
     filtered_cluster_assignment = cluster_assignement[mask]
 
     if len(np.unique(filtered_cluster_assignment)) > 1:  # Ensure at least two clusters for evaluation
@@ -94,18 +97,18 @@ def clustering(clustering_method, distance_matrix, params):
     result["Silhouette of each cluster"] = silhouette_clusters(filtered_distance_matrix, filtered_cluster_assignment)
     return clusters, cluster_assignement, result
 
+
 #
 # **********************
 
-def agglomerative_ward(data, nbr_clusters):
-    cluster = AgglomerativeClustering(n_clusters=nbr_clusters, linkage='ward', metric='euclidean')
+def agglomerative_euclidean(data, params):
+    cluster = AgglomerativeClustering(n_clusters=params.nbr_clusters, linkage=params.linkage, metric='euclidean')
     cluster_assignments = cluster.fit_predict(data)
-    print(f"The silhouette score for {nbr_clusters} clusters using 'ward' linkage is: ",
+    print(f"The silhouette score for {params.nbr_clusters} clusters using 'ward' linkage is: ",
           silhouette_score(X=data, labels=cluster.labels_, metric='euclidean'))
 
-    print(f"The davies bouldin score for {nbr_clusters} clusters using 'ward' linkage is: ",
+    print(f"The davies bouldin score for {params.nbr_clusters} clusters using 'ward' linkage is: ",
           davies_bouldin_score(data, cluster.labels_))
-
 
     return cluster, cluster_assignments
 

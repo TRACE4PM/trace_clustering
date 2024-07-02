@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.spatial import distance
-from scipy.spatial.distance import jaccard
+from scipy.spatial.distance import jaccard, pdist, squareform
 from similarity.normalized_levenshtein import NormalizedLevenshtein
 
 
@@ -75,6 +75,11 @@ def hamming_distance(vectors):
     return distance_matrix
 
 
+def euclidean_distance(vectors):
+    """Calculate the Euclidean distance matrix."""
+    return squareform(pdist(vectors, metric='euclidean'))
+
+
 def distanceMeasures(vectors, distance):
     distance_matrix = []
     if distance == "hamming":
@@ -83,5 +88,7 @@ def distanceMeasures(vectors, distance):
         distance_matrix = jaccard_distance(vectors)
     elif distance == "cosine":
         distance_matrix = cosine_distance(vectors)
+    elif distance == "euclidean":
+        distance_matrix = euclidean_distance(vectors)
 
     return distance_matrix
