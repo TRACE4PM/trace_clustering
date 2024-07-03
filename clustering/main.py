@@ -39,7 +39,7 @@ def trace_based_clustering(file_path, clustering_methode, params):
     # calculated the normalized levenshtein distance matrix for the traces
     distance_matrix = levenshtein(traces['trace'].array)
     print("dist matrix", distance_matrix)
-    # drawDendrogram(distance_matrix, params.linkage)
+    drawDendrogram(distance_matrix, params.linkage)
     # Clustering based on the distance matrix and the chosen method
     clusters, cluster_assignement, result = clustering(clustering_methode, distance_matrix, params)
     print(clusters, cluster_assignement)
@@ -139,7 +139,7 @@ def feature_based_clustering(file_path, clustering_method, params, min_support, 
 
     return result, nb
 
-def fss_euclidean_distance(file_path, params, min_support, min_length):
+def fss_euclidean_distance(file_path, n_cluster, min_support, min_length):
     """
         feature based clustering using fss encoding and without a distance measure
         using Agglomerative clustering with Ward linkage and Euclidean distance
@@ -147,10 +147,7 @@ def fss_euclidean_distance(file_path, params, min_support, min_length):
         file_path: log file in a csv format with the columns 'client_id', 'client_id', 'timestamp'
         vector_representation : Binary Representation, frequency based representation, or Relative frequency
         clustering_methode: dbscan or agglomerative clustering algorithms
-        params: parameters of each clustering algorithm
-            epsilon and min_samples => DBSCAN
-            n_cluster and linkage criteria => Agglomerative
-            distance : either Jaccard, Cosine, or Hamming distance
+        n_cluster and linkage criteria => Agglomerative
     Returns:
         Davis bouldin score
         Number of clusters
@@ -170,7 +167,7 @@ def fss_euclidean_distance(file_path, params, min_support, min_length):
 
     # drawDendrogram(data, 'ward', 'Using Improved FSS on all traces')
 
-    clusters, cluster_assignement= agglomerative_euclidean(data, params)
+    clusters, cluster_assignement, result = agglomerative_euclidean(data, n_cluster)
     # replaced_traces['Cluster_Labels'] = fss_cluster_labels_hac
 
     # cluster, cluster_assignement, result = clustering("agglomerative_ward",data, nbr_clusters)
@@ -180,13 +177,10 @@ def fss_euclidean_distance(file_path, params, min_support, min_length):
 
     list_clients = trace_cols['client_id']  #get a list of all the client ids
     result_df = pd.DataFrame({'client_id': list_clients, 'cluster_id': cluster_assignement})
-    result = silhouetteAnalysis(data, cluster_assignement, params.nbr_clusters, 'euclidean')
-
     # Save traces of each cluster into separate CSV files
-    save_clusters_fss(params.nbr_clusters,df, result_df)
+    save_clusters_fss(n_cluster,df, result_df)
     nb = number_traces("temp/logs/")  # get the number of traces in each cluster
     return result, nb
-
 
 def fss_meanshift(file_path, distance, min_support, min_length):
     """

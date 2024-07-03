@@ -6,8 +6,6 @@ import matplotlib.cm as cm
 from matplotlib import pyplot as plt
 from scipy.cluster import hierarchy
 from sklearn.metrics import silhouette_samples, silhouette_score
-from scipy.spatial.distance import squareform
-
 
 def silhouette_clusters(distance_matrix, cluster_assignement):
     """
@@ -124,34 +122,29 @@ it returns the silhouette score of each cluster and plots the silhouette analysi
 
 # Compute silhouette scores for each data point
 def silhouetteAnalysis(data, cluster_labels, n_clusters, metric='euclidean'):
+    # Compute the average silhouette score
     silhouette_avg = silhouette_score(X=data, labels=cluster_labels, metric=metric)
+    # Compute the silhouette scores for each sample
     sample_silhouette_values = silhouette_samples(X=data, labels=cluster_labels, metric=metric)
-    # Assign unique labels within each cluster
-    unique_clusters = set(cluster_labels)
+
     result = {
-        "Silhouette of each cluster": {},
-        "Silhouette": silhouette_avg,
-        "Number of clusters": n_clusters,
-        "Average Silhouette": silhouette_avg
+        "Silhouette of each cluster": {}
     }
 
-    for i, cluster in enumerate(unique_clusters):
-        cluster_indices = np.where(cluster_labels == cluster)[0]
-        cluster_labels[cluster_indices] = i
-
     # Compute the silhouette score for each cluster
-    unique_clusters = set(cluster_labels)
+    unique_clusters = np.unique(cluster_labels)
     for cluster in unique_clusters:
         cluster_indices = np.where(cluster_labels == cluster)[0]  # Indices of data points in the cluster
         if len(cluster_indices) > 1:  # Check if the cluster has more than one data point
             cluster_silhouette_scores = sample_silhouette_values[cluster_indices]
-
             cluster_avg_silhouette = np.mean(cluster_silhouette_scores)
-            print(f"Average Silhouette score for Cluster {cluster}: {cluster_avg_silhouette}")
+            result["Silhouette of each cluster"][cluster] = cluster_avg_silhouette
         else:
             print(f"Cluster {cluster} has fewer than 2 data points. Silhouette score cannot be calculated.")
+            result["Silhouette of each cluster"][cluster] = None
 
     return result
+
     # Plot silhouette analysis
     # fig, ax = plt.subplots()
     # y_lower = 10

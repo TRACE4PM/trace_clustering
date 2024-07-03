@@ -101,16 +101,25 @@ def clustering(clustering_method, data, params):
 #
 # **********************
 
-def agglomerative_euclidean(data, params):
-    cluster = AgglomerativeClustering(n_clusters=params.nbr_clusters, linkage=params.linkage, metric='euclidean')
+def agglomerative_euclidean(data, n_clusters):
+    # Perform agglomerative clustering
+    cluster = AgglomerativeClustering(n_clusters=n_clusters, linkage="ward", metric='euclidean')
     cluster_assignments = cluster.fit_predict(data)
-    print(f"The silhouette score for {params.nbr_clusters} clusters using 'ward' linkage is: ",
-          silhouette_score(X=data, labels=cluster.labels_, metric='euclidean'))
 
-    print(f"The davies bouldin score for {params.nbr_clusters} clusters using 'ward' linkage is: ",
-          davies_bouldin_score(data, cluster.labels_))
+    # Calculate silhouette score
+    silhouette = silhouette_score(X=data, labels=cluster_assignments, metric='euclidean')
+    # Calculate Davies-Bouldin score
+    davies_bouldin = davies_bouldin_score(data, cluster_assignments)
+    # Perform silhouette analysis
+    silhouette_analysis = silhouetteAnalysis(data, cluster_assignments, n_clusters, 'euclidean')
 
-    return cluster, cluster_assignments
+    result = {
+        "Davies-Bouldin": davies_bouldin,
+        "Silhouette Score": silhouette,
+        "Silhouette Analysis": silhouette_analysis,
+    }
+
+    return cluster,cluster_assignments, result
 
 
 def applyHAC(linkage, num_of_clusters, metric, data):
