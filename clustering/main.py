@@ -30,16 +30,16 @@ def trace_based_clustering(file_path, clustering_methode, params):
     warnings.filterwarnings('ignore')
     df = pd.read_csv(file_path, sep=";")
     df['timestamp'] = pd.to_datetime(df['timestamp'])
-
     df = df.sort_values(by='timestamp', ascending=True)
-    # print(df.head())
     # generating the traces of each user by grouping their actions
     traces = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
-    # print(traces[traces['client_id'] == "mid41"]['trace'].values)
     # calculated the normalized levenshtein distance matrix for the traces
     distance_matrix = levenshtein(traces['trace'].array)
     print("dist matrix", distance_matrix)
-    drawDendrogram(distance_matrix, params.linkage)
+
+    # generating the dendrogram for hieararchical clustering
+    # drawDendrogram(distance_matrix, params.linkage)
+
     # Clustering based on the distance matrix and the chosen method
     clusters, cluster_assignement, result = clustering(clustering_methode, distance_matrix, params)
     print(clusters, cluster_assignement)
@@ -70,20 +70,12 @@ def vector_based_clustering(file_path, vector_representation, clustering_method,
     df = pd.read_csv(file_path, sep=";")
 
     df['timestamp'] = pd.to_datetime(df['timestamp'])
+
     df = df.sort_values(by='timestamp', ascending=True)
-    print(vector_representation, clustering_method)
     traces = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
 
     # get the vector representation of each trace based on the choice of the user
     vectors = vectorRepresentation(vector_representation, traces)
-    print(vectors)
-    # generate the distance matrix using the distance measure the user choses
-
-    # if clustering_method == "agglomerative_euclidean":
-    #     print("euclieeee")
-    #     drawDendrogram(vectors, params.linkage)
-    #     clusters, cluster_assignement, result = clustering(clustering_method, vectors, params)
-    # else :
     distance_matrix = distanceMeasures(vectors, params.distance)
     print(distance_matrix)
     # drawDendrogram(distance_matrix, params.linkage)
@@ -165,11 +157,11 @@ def fss_euclidean_distance(file_path, n_cluster, min_support, min_length):
     # Convert the list of vectors to a numpy array
     data =list(replaced_traces['SemanticTrace_FSSEncoded_Padded'])
 
+    # generating the dendrogram based on the linkage criteria
     # drawDendrogram(data, 'ward', 'Using Improved FSS on all traces')
 
     clusters, cluster_assignement, result = agglomerative_euclidean(data, n_cluster)
     # replaced_traces['Cluster_Labels'] = fss_cluster_labels_hac
-
     # cluster, cluster_assignement, result = clustering("agglomerative_ward",data, nbr_clusters)
     #
     columns_to_keep = ['client_id', 'SemanticTrace']

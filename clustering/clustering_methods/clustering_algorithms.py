@@ -73,9 +73,9 @@ def clustering(clustering_method, data, params):
         clusters, cluster_assignement = agglomerative_clust(data, params)
     # # elif clustering_method.lower() == "meanshift":
     # #     clusters, cluster_assignement = meanshift(data, params)
-    # elif clustering_method.lower() == "agglomerative_euclidean":
-    #     print("euclidean disttttt")
-    #     clusters, cluster_assignement = agglomerative_euclidean(data, params)
+    elif clustering_method.lower() == "agglomerative_euclidean":
+        print("euclidean disttttt")
+        clusters, cluster_assignement = agglomerative_euclidean(data, params)
 
     print(clusters, cluster_assignement)
     # Evaluating the clusters
