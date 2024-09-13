@@ -1,11 +1,11 @@
 import numpy as np
 import pandas as pd
 import warnings
-from .clustering_methods.clustering_algorithms import clustering, meanshift, applyHAC, agglomerative_euclidean
+from .clustering_methods.clustering_algorithms import clustering, meanshift, agglomerative_euclidean
 from .distance.distance_measures import distanceMeasures
 from .distance.distance_measures import levenshtein
 from .feature_based_clustering.vector_representation import vectorRepresentation, get_FSS_encoding
-from .utils import save_clusters, save_clusters_fss, drawDendrogram
+from .utils import save_clusters, save_clusters_fss, drawDendrogram, plot_elbow_method
 from .utils import number_traces, silhouetteAnalysis
 
 def trace_based_clustering(file_path, clustering_methode, params):
@@ -42,7 +42,7 @@ def trace_based_clustering(file_path, clustering_methode, params):
 
     # Clustering based on the distance matrix and the chosen method
     clusters, cluster_assignement, result = clustering(clustering_methode, distance_matrix, params)
-    print(clusters, cluster_assignement)
+    # print(clusters, cluster_assignement)
     # Remove the previous files in the log directory before saving the new logs
     save_clusters(df, cluster_assignement, traces)
     nb = number_traces('temp/logs')
@@ -73,11 +73,10 @@ def vector_based_clustering(file_path, vector_representation, clustering_method,
 
     df = df.sort_values(by='timestamp', ascending=True)
     traces = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
-
     # get the vector representation of each trace based on the choice of the user
     vectors = vectorRepresentation(vector_representation, traces)
     distance_matrix = distanceMeasures(vectors, params.distance)
-    print(distance_matrix)
+
     # drawDendrogram(distance_matrix, params.linkage)
     # Clustering based on the method chosen by the user
     clusters, cluster_assignement, result = clustering(clustering_method, distance_matrix, params)
@@ -85,6 +84,39 @@ def vector_based_clustering(file_path, vector_representation, clustering_method,
     save_clusters(df, cluster_assignement, traces)
     nb = number_traces("temp/logs/")
     return result, nb
+
+
+def kmeans_feature_based(file_path, vector_representation, params):
+    """
+    this function does the feature based clustering on the traces by representing each trace by a vector and
+    and performing the clustering using K-means
+
+    Args:
+        file_path: log file in a csv format with the columns 'client_id', 'client_id', 'timestamp'
+        vector_representation : Binary Representation, frequency based representation, or Relative frequency
+        params : number of clusters
+    Returns:
+        Davis bouldin score
+        Number of clusters
+        Silhouette score of the clustering and for each cluster
+    """
+    df = pd.read_csv(file_path, sep=";")
+
+    df['timestamp'] = pd.to_datetime(df['timestamp'])
+
+    df = df.sort_values(by='timestamp', ascending=True)
+    traces = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
+    # get the vector representation of each trace based on the choice of the user
+    vectors = vectorRepresentation(vector_representation, traces)
+
+    # plot_elbow_method(vectors)      # plotting the elbow method to choose best k value
+    clusters, cluster_assignement, result = clustering("kmeans", vectors, params)
+
+    # Saving the clusters on temp log files
+    save_clusters(df, cluster_assignement, traces)
+    nb = number_traces("temp/logs/")
+    return result, nb
+
 
 
 def feature_based_clustering(file_path, clustering_method, params, min_support, min_length):
@@ -147,9 +179,7 @@ def fss_euclidean_distance(file_path, n_cluster, min_support, min_length):
     """
     df = pd.read_csv(file_path, sep=";")
     df = df.sort_values(by='timestamp', ascending=True)
-    print(df.head())
     trace_df = df.groupby("client_id")["action"].apply(list).reset_index(name='SemanticTrace')
-    print(trace_df.head())
     trace_df['SemanticTrace'] = trace_df['SemanticTrace'].apply(lambda x: str(x))
 
     replaced_traces = get_FSS_encoding(trace_df, 'SemanticTrace', min_support, min_length)
@@ -169,6 +199,7 @@ def fss_euclidean_distance(file_path, n_cluster, min_support, min_length):
 
     list_clients = trace_cols['client_id']  #get a list of all the client ids
     result_df = pd.DataFrame({'client_id': list_clients, 'cluster_id': cluster_assignement})
+    # print(result_df)
     # Save traces of each cluster into separate CSV files
     save_clusters_fss(n_cluster,df, result_df)
     nb = number_traces("temp/logs/")  # get the number of traces in each cluster

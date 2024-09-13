@@ -89,5 +89,5 @@ def vectorRepresentation(vector_representation, traces):
     elif vector_representation == "relative frequency representation":
         vectors = extractRelativeFreq(traces, "client_id", "trace")
     # elif vector_representation == "fss encoding":
-    #     vectors = get_FSS_encoding(traces, "client_id", "trace" )
+    #     vectors = get_FSS_encoding(traces, "trace", 80,2 )
     return vectors

@@ -1,11 +1,13 @@
 import csv
+import chardet
 import numpy as np
 import os
 import pandas as pd
-import matplotlib.cm as cm
 from matplotlib import pyplot as plt
 from scipy.cluster import hierarchy
+from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_samples, silhouette_score
+
 
 def silhouette_clusters(distance_matrix, cluster_assignement):
     """
@@ -80,7 +82,13 @@ def number_traces(path):
         if filename.startswith("cluster_log_"):
             cluster_num = int(filename.split("_")[2].split(".")[0])  # Extract cluster number from filename
             file_path = os.path.join(path, filename)
-            df = pd.read_csv(file_path, sep=";")
+            # Detect encoding
+            with open(file_path, 'rb') as f:
+                result = chardet.detect(f.read())
+                encoding = result['encoding']
+
+            # Read the file with the detected encoding
+            df = pd.read_csv(file_path,sep=';', encoding=encoding)
             # Group by client_id and aggregate actions into lists
             traces = df.groupby("client_id")["action"].apply(list).reset_index(name='trace')
             data = np.array(traces['trace'])
@@ -109,7 +117,7 @@ def save_clusters_fss(nbr_clusters,df, result_df):
     for cluster_id in range(nbr_clusters):
         cluster_indices = result_df[result_df['cluster_id'] == cluster_id].index
         cluster_traces = df.iloc[cluster_indices][['client_id', 'action', 'timestamp']]
-        cluster_traces['timestamp'] = pd.to_datetime(cluster_traces['timestamp'],format='%Y-%m-%d %H:%M:%S')
+        cluster_traces['timestamp'] = pd.to_datetime(cluster_traces['timestamp'],format='mixed')
         cluster_traces['cluster_id'] = cluster_id
         cluster_traces.to_csv(f'temp/logs/cluster_log_{cluster_id}.csv', sep=';', index=False)
 
@@ -145,39 +153,6 @@ def silhouetteAnalysis(data, cluster_labels, n_clusters, metric='euclidean'):
 
     return result
 
-    # Plot silhouette analysis
-    # fig, ax = plt.subplots()
-    # y_lower = 10
-    #
-    # for i in range(n_clusters):
-    #     # Aggregate the silhouette scores for samples belonging to cluster i and sort them
-    #     ith_cluster_silhouette_values = sample_silhouette_values[cluster_labels == i]
-    #     ith_cluster_silhouette_values.sort()
-    #
-    #     size_cluster_i = ith_cluster_silhouette_values.shape[0]
-    #     y_upper = y_lower + size_cluster_i
-    #
-    #     color = cm.nipy_spectral(float(i) / n_clusters)
-    #     ax.fill_betweenx(np.arange(y_lower, y_upper),
-    #                      0, ith_cluster_silhouette_values,
-    #                      facecolor=color, edgecolor=color, alpha=0.7)
-    #
-    #     # Label the silhouette plots with their cluster numbers at the middle
-    #     ax.text(-0.05, y_lower + 0.5 * size_cluster_i, str(i))
-    #
-    #     # Compute the new y_lower for the next plot
-    #     y_lower = y_upper + 10  # 10 for the 0 samples
-    #
-    # ax.set_xlabel("Silhouette coefficient values")
-    # ax.set_ylabel("Cluster label")
-    #
-    # # The vertical line for average silhouette score of all the values
-    # ax.axvline(x=silhouette_avg, color="red", linestyle="--")
-    # ax.set_yticks([])  # Clear the yaxis labels / ticks
-    # ax.set_xticks([-0.1, 0, 0.2, 0.4, 0.6, 0.8, 1])
-    #
-    # plt.title(f"Silhouette analysis for {n_clusters} clusters")
-    # plt.show()
 
 def drawDendrogram(data, method, title='', saveFlag=False, outputDir=False):
     # Plot the dendrogram
@@ -190,3 +165,23 @@ def drawDendrogram(data, method, title='', saveFlag=False, outputDir=False):
     if (saveFlag):
         # Save the dendrogram to a file (change 'dendrogram.png' to your desired filename)
         plt.savefig(os.path.join(outputDir, 'Dendrogram.png'))
+
+
+def plot_elbow_method(vectors, max_k=10):
+    wcss = []
+
+    # Calculate WCSS for different values of k
+    for k in range(1, max_k + 1):
+        kmeans = KMeans(n_clusters=k, random_state=42)
+        kmeans.fit(vectors)
+        wcss.append(kmeans.inertia_)
+
+    # Plot the WCSS values
+    plt.figure(figsize=(8, 6))
+    plt.plot(range(1, max_k + 1), wcss, marker='o', linestyle='--')
+    plt.title('Elbow Method for Optimal k')
+    plt.xlabel('Number of clusters (k)')
+    plt.ylabel('WCSS (Inertia)')
+    plt.xticks(range(1, max_k + 1))
+    plt.grid(True)
+    plt.show()

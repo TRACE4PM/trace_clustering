@@ -19,11 +19,10 @@ def agglomerative_clust(distance_matrix, params):
     return cluster, cluster_assignments
 
 
-def kmeans_clust(best_k, distance_matrix):
-    kmeans = KMeans(n_clusters=best_k)
-    X = distance_matrix.reshape(-1, 1)
-    clusters = kmeans.fit_predict(X)
-    return clusters
+def kmeans_clust(best_k, vectors):
+    clusters = KMeans(n_clusters=best_k, random_state=45)
+    cluster_assignments = clusters.fit_predict(vectors)
+    return clusters, cluster_assignments
 
 
 def meanshift(distance_matrix, traces_df):
@@ -71,22 +70,26 @@ def clustering(clustering_method, data, params):
         clusters, cluster_assignement = dbscan_clust(data, params)
     elif clustering_method.lower() == "agglomerative":
         clusters, cluster_assignement = agglomerative_clust(data, params)
-    # # elif clustering_method.lower() == "meanshift":
-    # #     clusters, cluster_assignement = meanshift(data, params)
+    elif clustering_method.lower() == "kmeans":
+        clusters, cluster_assignement = kmeans_clust(params.nbr_clusters, data)
     elif clustering_method.lower() == "agglomerative_euclidean":
-        print("euclidean disttttt")
         clusters, cluster_assignement = agglomerative_euclidean(data, params)
 
     print(clusters, cluster_assignement)
     # Evaluating the clusters
     mask = cluster_assignement != -1
-    filtered_distance_matrix = data[np.ix_(mask, mask)]
+
+    if len(data.shape) == 2 and data.shape[0] == data.shape[1]:  # Square matrix, likely a distance matrix
+        filtered_data = data[np.ix_(mask, mask)]
+    else:  # Not a square matrix, likely vectors
+        filtered_data = data[mask]
+
     filtered_cluster_assignment = cluster_assignement[mask]
 
     if len(np.unique(filtered_cluster_assignment)) > 1:  # Ensure at least two clusters for evaluation
         # Evaluating the clusters without outliers
-        db_score = davies_bouldin_score(filtered_distance_matrix, filtered_cluster_assignment)
-        silhouette = silhouette_score(filtered_distance_matrix, filtered_cluster_assignment)
+        db_score = davies_bouldin_score(filtered_data, filtered_cluster_assignment)
+        silhouette = silhouette_score(filtered_data, filtered_cluster_assignment)
     else:
         db_score = float('nan')  # Not enough clusters to evaluate
         silhouette = float('nan')  # Not enough clusters to evaluate
@@ -94,7 +97,7 @@ def clustering(clustering_method, data, params):
     result["Davies Bouldin"] = db_score
     result["Silhouette"] = silhouette
     result["Number of clusters"] = len(np.unique(filtered_cluster_assignment))
-    result["Silhouette of each cluster"] = silhouette_clusters(filtered_distance_matrix, filtered_cluster_assignment)
+    result["Silhouette of each cluster"] = silhouette_clusters(filtered_data, filtered_cluster_assignment)
     return clusters, cluster_assignement, result
 
 
