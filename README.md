@@ -1,4 +1,4 @@
-# clustering
+# TRACE4PM - Trace clustering
 
 ## Installation and Configuration
 
